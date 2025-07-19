@@ -52,7 +52,7 @@ export default function LandingPage() {
       address: '123 Genius Ave, Pizza City, 12345',
       phone: '+1 (234) 567-890',
       email: 'reservations@pizzerialosgenios.com',
-      adminLogin: 'Admin Login',
+      register: 'Sign Up',
       home: 'Home',
       pizzas: 'Pizzas',
       snacks: 'Snacks',
@@ -72,7 +72,7 @@ export default function LandingPage() {
       address: 'Av. de los Genios 123, Ciudad Pizza, 12345',
       phone: '+1 (234) 567-890',
       email: 'reservas@pizzerialosgenios.com',
-      adminLogin: 'Acceso Admin',
+      register: 'Regístrate',
       home: 'Inicio',
       pizzas: 'Pizzas',
       snacks: 'Snacks',
@@ -116,8 +116,8 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
             <ThemeToggle />
-            <Button asChild variant="outline" size="sm">
-              <Link href="/admin/dashboard">{T.adminLogin}</Link>
+            <Button asChild size="sm">
+              <Link href="#">{T.register}</Link>
             </Button>
           </div>
         </div>
@@ -230,7 +230,9 @@ export default function LandingPage() {
       <footer className="py-6 border-t bg-background">
         <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
           <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Pizzeria Los Genios. All Rights Reserved.</p>
-          <Link href="/admin/dashboard" className="text-sm text-muted-foreground hover:text-primary">{T.adminLogin}</Link>
+          <Button variant="ghost" asChild>
+            <Link href="#">{T.register}</Link>
+          </Button>
         </div>
       </footer>
     </div>
