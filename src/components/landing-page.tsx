@@ -9,16 +9,33 @@ import { Logo } from '@/components/icons';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { LanguageSwitcher, ThemeToggle } from './header';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-const menuItems = [
-  { name: 'Pizza Margherita', description: 'Classic pizza with tomato, mozzarella, and basil.', price: '$12.50', image: 'https://placehold.co/600x400.png', hint: 'pizza margherita' },
-  { name: 'Pizza Pepperoni', description: 'The all-time favorite, covered in pepperoni.', price: '$14.00', image: 'https://placehold.co/600x400.png', hint: 'pepperoni pizza' },
-  { name: 'Garlic Bread', description: 'Toasted bread with garlic butter and herbs.', price: '$6.00', image: 'https://placehold.co/600x400.png', hint: 'garlic bread' },
-  { name: 'Genius Special', description: 'A secret recipe that will blow your mind.', price: '$18.00', image: 'https://placehold.co/600x400.png', hint: 'specialty pizza' },
-];
+const menu = {
+  pizzas: [
+    { name: 'Pizza Margherita', description: 'Classic pizza with tomato, mozzarella, and basil.', price: '$12.50', image: 'https://placehold.co/600x400.png', hint: 'pizza margherita' },
+    { name: 'Pizza Pepperoni', description: 'The all-time favorite, covered in pepperoni.', price: '$14.00', image: 'https://placehold.co/600x400.png', hint: 'pepperoni pizza' },
+    { name: 'Genius Special', description: 'A secret recipe that will blow your mind.', price: '$18.00', image: 'https://placehold.co/600x400.png', hint: 'specialty pizza' },
+    { name: 'Veggie Supreme', description: 'Loaded with all the best vegetables.', price: '$15.50', image: 'https://placehold.co/600x400.png', hint: 'vegetarian pizza' },
+  ],
+  snacks: [
+    { name: 'Garlic Bread', description: 'Toasted bread with garlic butter and herbs.', price: '$6.00', image: 'https://placehold.co/600x400.png', hint: 'garlic bread' },
+    { name: 'Mozzarella Sticks', description: 'Fried cheese sticks served with marinara sauce.', price: '$8.00', image: 'https://placehold.co/600x400.png', hint: 'mozzarella sticks' },
+    { name: 'Chicken Wings', description: 'Spicy and tangy, perfect for sharing.', price: '$10.00', image: 'https://placehold.co/600x400.png', hint: 'chicken wings' },
+  ],
+  drinks: [
+    { name: 'Coca-Cola', description: 'Classic soft drink.', price: '$2.50', image: 'https://placehold.co/600x400.png', hint: 'soda can' },
+    { name: 'Fresh Lemonade', description: 'Homemade with fresh lemons.', price: '$3.50', image: 'https://placehold.co/600x400.png', hint: 'lemonade glass' },
+    { name: 'Craft Beer', description: 'Local craft beer selection.', price: '$7.00', image: 'https://placehold.co/600x400.png', hint: 'beer pint' },
+  ],
+  desserts: [
+    { name: 'Tiramisu', description: 'A coffee-flavored Italian dessert.', price: '$7.50', image: 'https://placehold.co/600x400.png', hint: 'tiramisu slice' },
+    { name: 'Chocolate Lava Cake', description: 'Warm chocolate cake with a molten center.', price: '$8.50', image: 'https://placehold.co/600x400.png', hint: 'lava cake' },
+  ]
+};
 
 export default function LandingPage() {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
 
   const translations = {
     en: {
@@ -29,13 +46,17 @@ export default function LandingPage() {
       aboutUs: 'About Us',
       aboutText: 'Pizzeria Los Genios was born from a passion for authentic Italian pizza and the desire to share it with the world. Our story began in the heart of the city, with a small kitchen and a big dream: to bring the traditional recipes of our grandmothers to every table, combining them with a modern and cozy atmosphere. We value fresh ingredients, traditional cooking techniques, and, above all, the joy of sharing a good meal with loved ones.',
       ourMenu: 'Our Menu',
-      menuText: 'A selection of our most beloved pizzas.',
+      menuText: 'A selection of our most beloved dishes.',
       contact: 'Contact & Location',
       address: '123 Genius Ave, Pizza City, 12345',
       phone: '+1 (234) 567-890',
       email: 'reservations@pizzerialosgenios.com',
       adminLogin: 'Admin Login',
       home: 'Home',
+      pizzas: 'Pizzas',
+      snacks: 'Snacks',
+      drinks: 'Drinks',
+      desserts: 'Desserts',
     },
     es: {
       heroTitle: 'Pizzas Ingeniosamente Buenas',
@@ -45,17 +66,38 @@ export default function LandingPage() {
       aboutUs: 'Quiénes Somos',
       aboutText: 'Pizzeria Los Genios nace de la pasión por la auténtica pizza italiana y el deseo de compartirla con el mundo. Nuestra historia comenzó en el corazón de la ciudad, con una pequeña cocina y un gran sueño: llevar las recetas tradicionales de nuestras abuelas a cada mesa, combinándolas con un ambiente moderno y acogedor. Valoramos los ingredientes frescos, las técnicas de cocina de siempre y, sobre todo, la alegría de compartir una buena comida con los seres queridos.',
       ourMenu: 'Nuestro Menú',
-      menuText: 'Una selección de nuestras pizzas más queridas.',
+      menuText: 'Una selección de nuestros platos más queridos.',
       contact: 'Contacto y Ubicación',
       address: 'Av. de los Genios 123, Ciudad Pizza, 12345',
       phone: '+1 (234) 567-890',
       email: 'reservas@pizzerialosgenios.com',
       adminLogin: 'Acceso Admin',
       home: 'Inicio',
+      pizzas: 'Pizzas',
+      snacks: 'Snacks',
+      bebidas: 'Bebidas',
+      postres: 'Postres',
     }
   }
 
   const T = translations[language];
+
+  const renderMenuItems = (items: typeof menu.pizzas) => (
+    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {items.map((item) => (
+        <Card key={item.name} className="text-left overflow-hidden">
+           <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-48 object-cover" />
+          <CardHeader>
+            <CardTitle>{item.name}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground text-sm h-10">{item.description}</p>
+            <p className="font-bold text-primary mt-4">{item.price}</p>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -63,7 +105,7 @@ export default function LandingPage() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
           <Link href="#" className="flex items-center gap-2">
             <Logo className="size-8 text-primary" />
-            <span className="text-xl font-bold font-headline text-primary">{t('app_name')}</span>
+            <span className="text-xl font-bold font-headline text-primary">Pizzeria Los Genios</span>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
             <Link href="#about" className="text-sm font-medium hover:text-primary transition-colors">{T.aboutUs}</Link>
@@ -87,9 +129,8 @@ export default function LandingPage() {
             src="https://placehold.co/1920x1080.png"
             alt="Restaurant Interior"
             data-ai-hint="pizzeria interior"
-            layout="fill"
-            objectFit="cover"
-            className="z-0"
+            fill
+            className="z-0 object-cover"
           />
           <div className="absolute inset-0 bg-black/50 z-10" />
           <div className="relative z-20 flex h-full flex-col items-center justify-center text-center p-4">
@@ -127,20 +168,26 @@ export default function LandingPage() {
           <div className="container mx-auto px-4 md:px-6 text-center">
             <h2 className="text-3xl font-bold font-headline text-primary">{T.ourMenu}</h2>
             <p className="mt-2 text-lg text-muted-foreground">{T.menuText}</p>
-            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {menuItems.map((item) => (
-                <Card key={item.name} className="text-left overflow-hidden">
-                   <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-48 object-cover" />
-                  <CardHeader>
-                    <CardTitle>{item.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground text-sm h-10">{item.description}</p>
-                    <p className="font-bold text-primary mt-4">{item.price}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <Tabs defaultValue="pizzas" className="mt-8">
+              <TabsList>
+                <TabsTrigger value="pizzas">{T.pizzas}</TabsTrigger>
+                <TabsTrigger value="snacks">{language === 'es' ? 'Snacks' : T.snacks}</TabsTrigger>
+                <TabsTrigger value="drinks">{language === 'es' ? 'Bebidas' : T.drinks}</TabsTrigger>
+                <TabsTrigger value="desserts">{language === 'es' ? 'Postres' : T.desserts}</TabsTrigger>
+              </TabsList>
+              <TabsContent value="pizzas">
+                {renderMenuItems(menu.pizzas)}
+              </TabsContent>
+              <TabsContent value="snacks">
+                {renderMenuItems(menu.snacks)}
+              </TabsContent>
+              <TabsContent value="drinks">
+                {renderMenuItems(menu.drinks)}
+              </TabsContent>
+              <TabsContent value="desserts">
+                {renderMenuItems(menu.desserts)}
+              </TabsContent>
+            </Tabs>
           </div>
         </section>
 
@@ -181,7 +228,7 @@ export default function LandingPage() {
 
       <footer className="py-6 border-t bg-background">
         <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
-          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} {t('app_name')}. All Rights Reserved.</p>
+          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Pizzeria Los Genios. All Rights Reserved.</p>
           <Link href="/admin/dashboard" className="text-sm text-muted-foreground hover:text-primary">{T.adminLogin}</Link>
         </div>
       </footer>

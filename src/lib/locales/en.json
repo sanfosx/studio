@@ -26,5 +26,9 @@
   "active_now": "Active Now",
   "on_the_platform": "on the platform",
   "sales_by_hour": "Sales by Hour",
-  "overview": "Overview"
+  "overview": "Overview",
+  "pizzas": "Pizzas",
+  "snacks": "Snacks",
+  "drinks": "Drinks",
+  "desserts": "Desserts"
 }
