@@ -11,10 +11,10 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { LanguageSwitcher, ThemeToggle } from './header';
 
 const menuItems = [
-  { name: 'Tacos al Pastor', description: 'Classic marinated pork tacos with pineapple.', price: '$3.50', image: 'https://placehold.co/600x400.png', hint: 'tacos pastor' },
-  { name: 'Guacamole & Chips', description: 'Freshly made guacamole with crispy tortilla chips.', price: '$8.00', image: 'https://placehold.co/600x400.png', hint: 'guacamole chips' },
-  { name: 'Enchiladas Verdes', description: 'Corn tortillas filled with chicken, topped with green salsa.', price: '$12.50', image: 'https://placehold.co/600x400.png', hint: 'enchiladas verdes' },
-  { name: 'Margarita Clásica', description: 'Tequila, lime juice, and triple sec.', price: '$9.00', image: 'https://placehold.co/600x400.png', hint: 'margarita cocktail' },
+  { name: 'Pizza Margherita', description: 'Classic pizza with tomato, mozzarella, and basil.', price: '$12.50', image: 'https://placehold.co/600x400.png', hint: 'pizza margherita' },
+  { name: 'Pizza Pepperoni', description: 'The all-time favorite, covered in pepperoni.', price: '$14.00', image: 'https://placehold.co/600x400.png', hint: 'pepperoni pizza' },
+  { name: 'Garlic Bread', description: 'Toasted bread with garlic butter and herbs.', price: '$6.00', image: 'https://placehold.co/600x400.png', hint: 'garlic bread' },
+  { name: 'Genius Special', description: 'A secret recipe that will blow your mind.', price: '$18.00', image: 'https://placehold.co/600x400.png', hint: 'specialty pizza' },
 ];
 
 export default function LandingPage() {
@@ -22,34 +22,34 @@ export default function LandingPage() {
 
   const translations = {
     en: {
-      heroTitle: 'Authentic Flavors, Modern Experience',
-      heroSubtitle: 'Discover the best traditional cuisine with a contemporary twist. Reserve your table or order online.',
-      reserve: 'Reserve a Table',
+      heroTitle: 'Ingeniously Good Pizzas',
+      heroSubtitle: 'Discover the art of pizza making. Order online or visit us!',
+      reserve: 'Book a Table',
       order: 'Order Online',
       aboutUs: 'About Us',
-      aboutText: 'Sabores en Línea was born from a passion for authentic food and the desire to share it with the world. Our story began in the heart of the city, with a small kitchen and a big dream: to bring the traditional recipes of our grandmothers to every table, combining them with a modern and cozy atmosphere. We value fresh ingredients, traditional cooking techniques, and, above all, the joy of sharing a good meal with loved ones.',
+      aboutText: 'Pizzeria Los Genios was born from a passion for authentic Italian pizza and the desire to share it with the world. Our story began in the heart of the city, with a small kitchen and a big dream: to bring the traditional recipes of our grandmothers to every table, combining them with a modern and cozy atmosphere. We value fresh ingredients, traditional cooking techniques, and, above all, the joy of sharing a good meal with loved ones.',
       ourMenu: 'Our Menu',
-      menuText: 'A selection of our most beloved dishes.',
+      menuText: 'A selection of our most beloved pizzas.',
       contact: 'Contact & Location',
-      address: '123 Flavor St, Foodie City, 12345',
+      address: '123 Genius Ave, Pizza City, 12345',
       phone: '+1 (234) 567-890',
-      email: 'reservations@sabores.com',
+      email: 'reservations@pizzerialosgenios.com',
       adminLogin: 'Admin Login',
       home: 'Home',
     },
     es: {
-      heroTitle: 'Sabores Auténticos, Experiencia Moderna',
-      heroSubtitle: 'Descubre la mejor cocina tradicional con un toque contemporáneo. Reserva tu mesa o pide en línea.',
+      heroTitle: 'Pizzas Ingeniosamente Buenas',
+      heroSubtitle: 'Descubre el arte de hacer pizza. ¡Pide en línea o visítanos!',
       reserve: 'Reservar Mesa',
       order: 'Pedir Online',
       aboutUs: 'Quiénes Somos',
-      aboutText: 'Sabores en Línea nace de la pasión por la comida auténtica y el deseo de compartirla con el mundo. Nuestra historia comenzó en el corazón de la ciudad, con una pequeña cocina y un gran sueño: llevar las recetas tradicionales de nuestras abuelas a cada mesa, combinándolas con un ambiente moderno y acogedor. Valoramos los ingredientes frescos, las técnicas de cocina de siempre y, sobre todo, la alegría de compartir una buena comida con los seres queridos.',
+      aboutText: 'Pizzeria Los Genios nace de la pasión por la auténtica pizza italiana y el deseo de compartirla con el mundo. Nuestra historia comenzó en el corazón de la ciudad, con una pequeña cocina y un gran sueño: llevar las recetas tradicionales de nuestras abuelas a cada mesa, combinándolas con un ambiente moderno y acogedor. Valoramos los ingredientes frescos, las técnicas de cocina de siempre y, sobre todo, la alegría de compartir una buena comida con los seres queridos.',
       ourMenu: 'Nuestro Menú',
-      menuText: 'Una selección de nuestros platos más queridos.',
+      menuText: 'Una selección de nuestras pizzas más queridas.',
       contact: 'Contacto y Ubicación',
-      address: 'Calle del Sabor 123, Ciudad Foodie, 12345',
+      address: 'Av. de los Genios 123, Ciudad Pizza, 12345',
       phone: '+1 (234) 567-890',
-      email: 'reservas@sabores.com',
+      email: 'reservas@pizzerialosgenios.com',
       adminLogin: 'Acceso Admin',
       home: 'Inicio',
     }
@@ -86,7 +86,7 @@ export default function LandingPage() {
           <Image
             src="https://placehold.co/1920x1080.png"
             alt="Restaurant Interior"
-            data-ai-hint="restaurant interior"
+            data-ai-hint="pizzeria interior"
             layout="fill"
             objectFit="cover"
             className="z-0"
@@ -113,7 +113,7 @@ export default function LandingPage() {
               <Image
                 src="https://placehold.co/600x400.png"
                 alt="Our Team"
-                data-ai-hint="restaurant staff"
+                data-ai-hint="pizza oven"
                 width={600}
                 height={400}
                 className="rounded-lg shadow-lg"

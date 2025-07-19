@@ -5,8 +5,8 @@ import { LanguageProvider } from '@/contexts/language-provider';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'Sabores en Línea',
-  description: 'Gestión de restaurante y pedidos online.',
+  title: 'Pizzeria Los Genios',
+  description: 'Las mejores pizzas de la ciudad.',
 };
 
 export default function RootLayout({
