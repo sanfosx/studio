@@ -145,10 +145,11 @@ export default function LandingPage() {
         </section>
 
         {/* About Us Section */}
-        <section id="about" className="py-16 md:py-24 bg-secondary">
-          <div className="container mx-auto px-4 md:px-6">
+        <section id="about" className="relative py-16 md:py-24 bg-secondary overflow-hidden">
+        <div className="absolute inset-0 bg-pizza-pattern opacity-50"></div>
+          <div className="container relative mx-auto px-4 md:px-6">
             <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
+              <div className="bg-background/80 backdrop-blur-sm p-8 rounded-lg">
                 <h2 className="text-3xl font-bold font-headline text-primary">{T.aboutUs}</h2>
                 <p className="mt-4 text-lg text-muted-foreground">{T.aboutText}</p>
               </div>
@@ -230,9 +231,11 @@ export default function LandingPage() {
       <footer className="py-6 border-t bg-background">
         <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
           <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Pizzeria Los Genios. All Rights Reserved.</p>
-          <Button variant="ghost" asChild>
-            <Link href="#">{T.register}</Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild>
+              <Link href="#">{T.register}</Link>
+            </Button>
+          </div>
         </div>
       </footer>
     </div>
