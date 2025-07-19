@@ -10,6 +10,7 @@ import { MapPin, Phone, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { LanguageSwitcher, ThemeToggle } from './header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { cn } from '@/lib/utils';
 
 const menu = {
   pizzas: [
@@ -84,8 +85,8 @@ export default function LandingPage() {
 
   const renderMenuItems = (items: typeof menu.pizzas) => (
     <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-      {items.map((item) => (
-        <Card key={item.name} className="text-left overflow-hidden">
+      {items.map((item, index) => (
+        <Card key={item.name} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105" style={{ animationDelay: `${index * 100}ms` }}>
            <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-48 object-cover" />
           <CardHeader>
             <CardTitle>{item.name}</CardTitle>
@@ -164,27 +165,27 @@ export default function LandingPage() {
         </section>
 
         {/* Menu Section */}
-        <section id="menu" className="py-16 md:py-24">
+        <section id="menu" className="py-16 md:py-24 bg-gradient-to-br from-background via-secondary to-background">
           <div className="container mx-auto px-4 md:px-6 text-center">
             <h2 className="text-3xl font-bold font-headline text-primary">{T.ourMenu}</h2>
             <p className="mt-2 text-lg text-muted-foreground">{T.menuText}</p>
             <Tabs defaultValue="pizzas" className="mt-8">
-              <TabsList>
-                <TabsTrigger value="pizzas">{T.pizzas}</TabsTrigger>
-                <TabsTrigger value="snacks">{language === 'es' ? 'Snacks' : T.snacks}</TabsTrigger>
-                <TabsTrigger value="drinks">{language === 'es' ? 'Bebidas' : T.drinks}</TabsTrigger>
-                <TabsTrigger value="desserts">{language === 'es' ? 'Postres' : T.desserts}</TabsTrigger>
+              <TabsList className="bg-transparent border-2 border-primary/20 p-1 rounded-full">
+                <TabsTrigger value="pizzas" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{T.pizzas}</TabsTrigger>
+                <TabsTrigger value="snacks" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{language === 'es' ? 'Snacks' : T.snacks}</TabsTrigger>
+                <TabsTrigger value="drinks" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{language === 'es' ? 'Bebidas' : T.drinks}</TabsTrigger>
+                <TabsTrigger value="desserts" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{language === 'es' ? 'Postres' : T.desserts}</TabsTrigger>
               </TabsList>
-              <TabsContent value="pizzas">
+              <TabsContent value="pizzas" className="data-[state=active]:animate-fade-in">
                 {renderMenuItems(menu.pizzas)}
               </TabsContent>
-              <TabsContent value="snacks">
+              <TabsContent value="snacks" className="data-[state=active]:animate-fade-in">
                 {renderMenuItems(menu.snacks)}
               </TabsContent>
-              <TabsContent value="drinks">
+              <TabsContent value="drinks" className="data-[state=active]:animate-fade-in">
                 {renderMenuItems(menu.drinks)}
               </TabsContent>
-              <TabsContent value="desserts">
+              <TabsContent value="desserts" className="data-[state=active]:animate-fade-in">
                 {renderMenuItems(menu.desserts)}
               </TabsContent>
             </Tabs>
