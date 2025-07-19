@@ -14,32 +14,33 @@ body {
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 25 95% 60%;
+    --primary: 25 95% 53%;
     --primary-foreground: 25 95% 15%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 220 88% 65%;
+    --accent: 34 94% 52%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 25 95% 60%;
-    --chart-1: 25 95% 60%;
-    --chart-2: 220 88% 65%;
+    --ring: 25 95% 53%;
+    --radius: 0.75rem;
+    --chart-1: 25 95% 53%;
+    --chart-2: 34 94% 52%;
     --chart-3: 280 100% 60%;
     --chart-4: 60 100% 50%;
     --chart-5: 200 100% 50%;
     --sidebar-background: 240 10% 5.9%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 25 95% 60%;
+    --sidebar-primary: 25 95% 53%;
     --sidebar-primary-foreground: 25 95% 15%;
     --sidebar-accent: 240 3.7% 18.9%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 25 95% 60%;
+    --sidebar-ring: 25 95% 53%;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -48,32 +49,32 @@ body {
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 25 95% 60%;
+    --primary: 25 95% 53%;
     --primary-foreground: 25 95% 15%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 220 88% 65%;
+    --accent: 34 94% 52%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 25 95% 60%;
-    --chart-1: 25 95% 60%;
-    --chart-2: 220 88% 65%;
+    --ring: 25 95% 53%;
+    --chart-1: 25 95% 53%;
+    --chart-2: 34 94% 52%;
     --chart-3: 280 100% 60%;
     --chart-4: 60 100% 50%;
     --chart-5: 200 100% 50%;
     --sidebar-background: 240 10% 5.9%;
     --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 25 95% 60%;
+    --sidebar-primary: 25 95% 53%;
     --sidebar-primary-foreground: 25 95% 15%;
     --sidebar-accent: 240 3.7% 18.9%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 25 95% 60%;
+    --sidebar-ring: 25 95% 53%;
   }
 }
 
@@ -88,7 +89,7 @@ body {
 
 @layer utilities {
   .bg-pizza-pattern {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" width="80" height="80"><text y="50" font-size="40">🍕</text></svg>');
-    animation: move-pizzas 40s linear infinite;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='currentColor'%3e%3cpath d='M16 2 L16 10 M16 2 A14 14 0 0 1 30 16 L22 16 M2 16 L10 16' /%3e%3c/svg%3e");
+    animation: move-pizzas 20s linear infinite;
   }
 }

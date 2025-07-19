@@ -116,7 +116,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
             <ThemeToggle />
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-shadow">
               <Link href="#">{T.register}</Link>
             </Button>
           </div>
@@ -146,7 +146,7 @@ export default function LandingPage() {
 
         {/* About Us Section */}
         <section id="about" className="relative py-16 md:py-24 bg-secondary overflow-hidden">
-        <div className="absolute inset-0 bg-pizza-pattern opacity-50"></div>
+        <div className="absolute inset-0 bg-pizza-pattern opacity-10 dark:opacity-5"></div>
           <div className="container relative mx-auto px-4 md:px-6">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="bg-background/80 backdrop-blur-sm p-8 rounded-lg">
