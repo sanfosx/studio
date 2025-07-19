@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/language-provider';
 import { Logo } from '@/components/icons';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { LanguageSwitcher, ThemeToggle } from './header';
 
 const menuItems = [
   { name: 'Tacos al Pastor', description: 'Classic marinated pork tacos with pineapple.', price: '$3.50', image: 'https://placehold.co/600x400.png', hint: 'tacos pastor' },
@@ -17,7 +18,7 @@ const menuItems = [
 ];
 
 export default function LandingPage() {
-  const { t, language, setLanguage } = useLanguage();
+  const { t, language } = useLanguage();
 
   const translations = {
     en: {
@@ -34,8 +35,6 @@ export default function LandingPage() {
       phone: '+1 (234) 567-890',
       email: 'reservations@sabores.com',
       adminLogin: 'Admin Login',
-      english: 'English',
-      spanish: 'Spanish',
       home: 'Home',
     },
     es: {
@@ -52,8 +51,6 @@ export default function LandingPage() {
       phone: '+1 (234) 567-890',
       email: 'reservas@sabores.com',
       adminLogin: 'Acceso Admin',
-      english: 'Inglés',
-      spanish: 'Español',
       home: 'Inicio',
     }
   }
@@ -74,9 +71,9 @@ export default function LandingPage() {
             <Link href="#contact" className="text-sm font-medium hover:text-primary transition-colors">{T.contact}</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <Button variant={language === 'es' ? 'secondary' : 'ghost'} size="sm" onClick={() => setLanguage('es')}>{T.spanish}</Button>
-            <Button variant={language === 'en' ? 'secondary' : 'ghost'} size="sm" onClick={() => setLanguage('en')}>{T.english}</Button>
-            <Button asChild variant="ghost" size="sm">
+            <LanguageSwitcher />
+            <ThemeToggle />
+            <Button asChild variant="outline" size="sm">
               <Link href="/admin/dashboard">{T.adminLogin}</Link>
             </Button>
           </div>
