@@ -114,11 +114,11 @@ export default function LandingPage() {
             <Link href="#contact" className="text-sm font-medium hover:text-primary transition-colors">{T.contact}</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <ThemeToggle />
             <Button asChild size="sm" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-shadow">
               <Link href="#">{T.register}</Link>
             </Button>
+            <LanguageSwitcher />
+            <ThemeToggle />
           </div>
         </div>
       </header>
@@ -146,7 +146,7 @@ export default function LandingPage() {
 
         {/* About Us Section */}
         <section id="about" className="relative py-16 md:py-24 bg-secondary overflow-hidden">
-        <div className="absolute inset-0 bg-pizza-pattern opacity-10 dark:opacity-5"></div>
+        <div className="absolute inset-0 bg-pizza-pattern"></div>
           <div className="container relative mx-auto px-4 md:px-6">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div className="bg-background/80 backdrop-blur-sm p-8 rounded-lg">
@@ -231,11 +231,6 @@ export default function LandingPage() {
       <footer className="py-6 border-t bg-background">
         <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
           <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Pizzeria Los Genios. All Rights Reserved.</p>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" asChild>
-              <Link href="#">{T.register}</Link>
-            </Button>
-          </div>
         </div>
       </footer>
     </div>
