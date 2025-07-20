@@ -50,7 +50,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await signIn(data.email, data.password);
-      router.push('/admin/dashboard');
+      router.push('/admin');
     } catch (error) {
       toast({
         variant: "destructive",
