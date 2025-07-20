@@ -34,7 +34,7 @@ if (isFirebaseConfigured()) {
   db = getFirestore(app);
   storage = getStorage(app);
 } else {
-  console.error("Firebase configuration is missing. Please check your .env.local file.");
+  console.warn("Firebase configuration is missing. Please check your .env.local file and restart the development server.");
 }
 
 
