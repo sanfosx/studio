@@ -2,6 +2,17 @@
 
 import * as React from 'react';
 import {
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+} from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import {
   Table,
   TableBody,
   TableCell,
@@ -18,27 +29,35 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogClose
+  DialogClose,
 } from '@/components/ui/dialog';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-  } from "@/components/ui/alert-dialog"
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Pencil, PlusCircle, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/language-provider';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 const clientSchema = z.object({
   id: z.string().optional(),
@@ -49,16 +68,13 @@ const clientSchema = z.object({
 
 type Client = z.infer<typeof clientSchema>;
 
-const initialClients: Client[] = [
-  { id: '1', name: 'Juan Perez', email: 'juan.perez@example.com', phone: '555-1234' },
-  { id: '2', name: 'Maria Garcia', email: 'maria.garcia@example.com', phone: '555-5678' },
-  { id: '3', name: 'Carlos Sanchez', email: 'carlos.sanchez@example.com', phone: '555-8765' },
-];
-
 export default function ClientsPage() {
   const { t } = useLanguage();
-  const [clients, setClients] = React.useState<Client[]>(initialClients);
+  const { toast } = useToast();
+  const [clients, setClients] = React.useState<Client[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [isFormOpen, setIsFormOpen] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [editingClient, setEditingClient] = React.useState<Client | null>(null);
 
   const form = useForm<Client>({
@@ -70,43 +86,96 @@ export default function ClientsPage() {
     },
   });
 
+  const clientsCollectionRef = collection(db, 'clients');
+
+  const fetchClients = React.useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const q = query(clientsCollectionRef, orderBy('name'));
+      const data = await getDocs(q);
+      const fetchedClients = data.docs.map(
+        (doc) => ({ ...doc.data(), id: doc.id } as Client)
+      );
+      setClients(fetchedClients);
+    } catch (error) {
+      console.error('Error fetching clients: ', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not fetch clients from the database.',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    fetchClients();
+  }, [fetchClients]);
+
   React.useEffect(() => {
     if (isFormOpen) {
-        if (editingClient) {
-            form.reset(editingClient);
-        } else {
-            form.reset({ name: '', email: '', phone: '' });
-        }
+      if (editingClient) {
+        form.reset(editingClient);
+      } else {
+        form.reset({ name: '', email: '', phone: '' });
+      }
     }
   }, [isFormOpen, editingClient, form]);
 
-  const onSubmit = (data: Client) => {
-    if (editingClient) {
-      // Update
-      setClients(clients.map((c) => (c.id === editingClient.id ? { ...c, ...data } : c)));
-    } else {
-      // Create
-      setClients([...clients, { ...data, id: String(clients.length + 1) }]);
+  const onSubmit = async (data: Client) => {
+    setIsSubmitting(true);
+    try {
+      if (editingClient && editingClient.id) {
+        const clientDoc = doc(db, 'clients', editingClient.id);
+        await updateDoc(clientDoc, data);
+        toast({ title: 'Éxito', description: 'Cliente actualizado correctamente.' });
+      } else {
+        await addDoc(clientsCollectionRef, data);
+        toast({ title: 'Éxito', description: 'Cliente creado correctamente.' });
+      }
+      await fetchClients();
+      setIsFormOpen(false);
+      setEditingClient(null);
+    } catch (error) {
+      console.error('Error saving client: ', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se pudo guardar el cliente.',
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    setEditingClient(null);
-    setIsFormOpen(false);
   };
 
-  const handleDelete = (id?: string) => {
+  const handleDelete = async (id?: string) => {
     if (!id) return;
-    setClients(clients.filter((c) => c.id !== id));
+    try {
+      const clientDoc = doc(db, 'clients', id);
+      await deleteDoc(clientDoc);
+      toast({ title: 'Éxito', description: 'Cliente eliminado correctamente.' });
+      await fetchClients();
+    } catch (error) {
+      console.error('Error deleting client: ', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se pudo eliminar el cliente.',
+      });
+    }
   };
 
   const openEditDialog = (client: Client) => {
     setEditingClient(client);
     setIsFormOpen(true);
   };
-  
+
   const openNewDialog = () => {
     setEditingClient(null);
     form.reset({ name: '', email: '', phone: '' });
     setIsFormOpen(true);
-  }
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -157,7 +226,7 @@ export default function ClientsPage() {
                     </FormItem>
                   )}
                 />
-                 <FormField
+                <FormField
                   control={form.control}
                   name="phone"
                   render={({ field }) => (
@@ -172,9 +241,17 @@ export default function ClientsPage() {
                 />
                 <DialogFooter>
                   <DialogClose asChild>
-                    <Button type="button" variant="secondary">{t('cancel')}</Button>
+                    <Button type="button" variant="secondary" disabled={isSubmitting}>
+                      {t('cancel')}
+                    </Button>
                   </DialogClose>
-                  <Button type="submit">{editingClient ? t('save_changes') : t('create_client')}</Button>
+                  <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting
+                      ? 'Guardando...'
+                      : editingClient
+                      ? t('save_changes')
+                      : t('create_client')}
+                  </Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -193,39 +270,76 @@ export default function ClientsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {clients.map((client) => (
-              <TableRow key={client.id}>
-                <TableCell className="font-medium">{client.name}</TableCell>
-                <TableCell>{client.email}</TableCell>
-                <TableCell>{client.phone}</TableCell>
-                <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(client)}>
-                        <Pencil className="h-4 w-4" />
-                        <span className="sr-only">{t('edit')}</span>
-                    </Button>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                                <span className="sr-only">{t('delete')}</span>
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                            <AlertDialogTitle>{t('delete_confirmation_title')}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {t('delete_confirmation_description')}
-                            </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(client.id)} className="bg-destructive hover:bg-destructive/90">{t('delete')}</AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    <Skeleton className="h-5 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-40" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-32" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-2">
+                      <Skeleton className="h-8 w-8" />
+                      <Skeleton className="h-8 w-8" />
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : clients.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="h-24 text-center">
+                  No se encontraron clientes.
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              clients.map((client) => (
+                <TableRow key={client.id}>
+                  <TableCell className="font-medium">{client.name}</TableCell>
+                  <TableCell>{client.email}</TableCell>
+                  <TableCell>{client.phone}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => openEditDialog(client)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      <span className="sr-only">{t('edit')}</span>
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                          <span className="sr-only">{t('delete')}</span>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{t('delete_confirmation_title')}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {t('delete_confirmation_description')}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(client.id)}
+                            className="bg-destructive hover:bg-destructive/90"
+                          >
+                            {t('delete')}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>
