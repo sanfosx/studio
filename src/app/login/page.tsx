@@ -19,6 +19,9 @@ import { useAuth } from '@/contexts/auth-provider';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Terminal } from 'lucide-react';
+import { isFirebaseConfigured } from '@/lib/firebase';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Por favor, introduce un email válido.' }),
@@ -32,6 +35,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = React.useState(false);
+  const firebaseConfigured = isFirebaseConfigured();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -42,6 +46,7 @@ export default function LoginPage() {
   });
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
+    if (!firebaseConfigured) return;
     setIsLoading(true);
     try {
       await signIn(data.email, data.password);
@@ -68,6 +73,15 @@ export default function LoginPage() {
           <CardDescription>Introduce tus credenciales para acceder al panel de administración.</CardDescription>
         </CardHeader>
         <CardContent>
+          {!firebaseConfigured && (
+            <Alert variant="destructive" className="mb-6">
+              <Terminal className="h-4 w-4" />
+              <AlertTitle>Configuración Requerida</AlertTitle>
+              <AlertDescription>
+                La configuración de Firebase no se ha encontrado. Por favor, crea un archivo `.env.local` con tus credenciales y reinicia el servidor.
+              </AlertDescription>
+            </Alert>
+          )}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
@@ -96,7 +110,7 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading || !firebaseConfigured}>
                 {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
               </Button>
             </form>

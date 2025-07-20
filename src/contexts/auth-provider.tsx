@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { onAuthStateChanged, User, signInWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, isFirebaseConfigured } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
@@ -17,21 +17,30 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const firebaseConfigured = isFirebaseConfigured();
 
   useEffect(() => {
+    if (!firebaseConfigured) {
+      setLoading(false);
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [firebaseConfigured]);
   
   const signIn = (email: string, pass: string) => {
+    if (!firebaseConfigured) {
+      return Promise.reject(new Error("Firebase not configured"));
+    }
     return signInWithEmailAndPassword(auth, email, pass);
   }
 
   const signOut = async () => {
+    if (!firebaseConfigured) return;
     await firebaseSignOut(auth);
   };
 
