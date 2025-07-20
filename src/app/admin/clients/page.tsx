@@ -56,12 +56,13 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { KeyRound, Pencil, PlusCircle, Trash2 } from 'lucide-react';
+import { KeyRound, Mail, Pencil, PlusCircle, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/language-provider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import {
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
 
@@ -70,7 +71,6 @@ const clientSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(1, 'Phone is required'),
-  password: z.string().optional(),
   role: z.string().default('cliente'),
 });
 
@@ -93,7 +93,6 @@ export default function ClientsPage() {
       name: '',
       email: '',
       phone: '',
-      password: '',
       role: 'cliente',
     },
   });
@@ -128,60 +127,57 @@ export default function ClientsPage() {
   React.useEffect(() => {
     if (isFormOpen) {
       if (editingClient) {
-        form.reset({ ...editingClient, password: '' });
+        form.reset({ ...editingClient });
       } else {
         form.reset({
           name: '',
           email: '',
           phone: '',
-          password: '',
           role: 'cliente',
         });
       }
     }
   }, [isFormOpen, editingClient, form]);
 
+  const generateTempPassword = () => {
+    return Math.random().toString(36).slice(-8) + 'A1!';
+  };
+
   const onSubmit = async (data: Client) => {
     setIsSubmitting(true);
     try {
       if (editingClient && editingClient.id) {
-        // Update existing client
         const clientDoc = doc(db, 'clients', editingClient.id);
-        const { password, ...clientData } = data; // Don't store password in firestore
-        await updateDoc(clientDoc, clientData);
+        await updateDoc(clientDoc, data);
         toast({
           title: 'Éxito',
           description: 'Cliente actualizado correctamente.',
         });
       } else {
-        // Create new client and auth user
-        if (!data.password || data.password.length < 6) {
-          form.setError('password', {
-            type: 'manual',
-            message: 'La contraseña debe tener al menos 6 caracteres.',
-          });
-          setIsSubmitting(false);
-          return;
-        }
-
+        const tempPassword = generateTempPassword();
         try {
+          // Create user in Auth
           const userCredential = await createUserWithEmailAndPassword(
             auth,
             data.email,
-            data.password
+            tempPassword
           );
           const user = userCredential.user;
 
-          const { password, ...clientData } = data;
+          // Add client to Firestore
           await addDoc(clientsCollectionRef, {
-            ...clientData,
-            uid: user.uid, // Link firestore doc to auth user
+            ...data,
+            uid: user.uid,
             role: 'cliente',
           });
 
+          // Send password reset email
+          await sendPasswordResetEmail(auth, data.email);
+
           toast({
             title: 'Éxito',
-            description: 'Cliente y usuario creados correctamente.',
+            description:
+              'Cliente creado. Se ha enviado un enlace para restablecer la contraseña.',
           });
         } catch (authError: any) {
           if (authError.code === 'auth/email-already-in-use') {
@@ -191,8 +187,15 @@ export default function ClientsPage() {
               description: 'Este correo electrónico ya está registrado.',
             });
           } else {
-            throw authError; // Re-throw other auth errors
+            console.error('Authentication error:', authError);
+            toast({
+                variant: 'destructive',
+                title: 'Error de autenticación',
+                description: 'No se pudo crear el usuario. Verifique la consola.'
+            })
           }
+          setIsSubmitting(false);
+          return;
         }
       }
       await fetchClients();
@@ -203,7 +206,8 @@ export default function ClientsPage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'No se pudo guardar el cliente. Verifique la consola para más detalles.',
+        description:
+          'No se pudo guardar el cliente. Verifique la consola para más detalles.',
       });
     } finally {
       setIsSubmitting(false);
@@ -212,8 +216,6 @@ export default function ClientsPage() {
 
   const handleDelete = async (id?: string) => {
     if (!id) return;
-    // Note: This does not delete the user from Firebase Auth.
-    // That requires a separate, more complex flow.
     try {
       const clientDoc = doc(db, 'clients', id);
       await deleteDoc(clientDoc);
@@ -231,6 +233,24 @@ export default function ClientsPage() {
       });
     }
   };
+  
+  const handleSendResetPassword = async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: 'Correo Enviado',
+        description: `Se ha enviado un enlace de restablecimiento de contraseña a ${email}.`
+      });
+    } catch (error) {
+      console.error('Error sending password reset email: ', error);
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se pudo enviar el correo de restablecimiento de contraseña.',
+      });
+    }
+  }
+
 
   const openEditDialog = (client: Client) => {
     setEditingClient(client);
@@ -239,7 +259,7 @@ export default function ClientsPage() {
 
   const openNewDialog = () => {
     setEditingClient(null);
-    form.reset({ name: '', email: '', phone: '', password: '' });
+    form.reset({ name: '', email: '', phone: '' });
     setIsFormOpen(true);
   };
 
@@ -318,29 +338,6 @@ export default function ClientsPage() {
                     </FormItem>
                   )}
                 />
-                {!editingClient && (
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contraseña</FormLabel>
-                        <FormControl>
-                           <div className="relative">
-                            <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input
-                              type="password"
-                              placeholder="••••••••"
-                              className="pl-10"
-                              {...field}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
                 <DialogFooter>
                   <DialogClose asChild>
                     <Button
@@ -409,6 +406,15 @@ export default function ClientsPage() {
                   <TableCell>{client.email}</TableCell>
                   <TableCell>{client.phone}</TableCell>
                   <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleSendResetPassword(client.email)}
+                      title="Enviar enlace de reseteo de contraseña"
+                    >
+                      <Mail className="h-4 w-4" />
+                      <span className="sr-only">Enviar enlace de reseteo</span>
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"
