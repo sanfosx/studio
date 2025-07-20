@@ -31,5 +31,20 @@
   "snacks": "Snacks",
   "drinks": "Drinks",
   "desserts": "Desserts",
-  "register": "Sign Up"
+  "register": "Sign Up",
+  "client_management_subtitle": "Manage your client list",
+  "add_client": "Add Client",
+  "edit_client": "Edit Client",
+  "edit_client_description": "Make changes to the client's profile here. Click save when you're done.",
+  "add_client_description": "Add a new client to your list. Click create when you're done.",
+  "name": "Name",
+  "phone": "Phone",
+  "cancel": "Cancel",
+  "save_changes": "Save Changes",
+  "create_client": "Create Client",
+  "actions": "Actions",
+  "edit": "Edit",
+  "delete": "Delete",
+  "delete_confirmation_title": "Are you absolutely sure?",
+  "delete_confirmation_description": "This action cannot be undone. This will permanently delete the client record."
 }

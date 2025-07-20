@@ -33,12 +33,13 @@ import AppHeader from '@/components/header';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useAuth, ProtectedRoute } from '@/contexts/auth-provider';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
   const { user, signOut } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await signOut();
@@ -47,7 +48,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
 
   const menuItems = [
     { icon: LayoutDashboard, label: t('dashboard'), href: '/admin/dashboard' },
-    { icon: Users, label: t('clients'), href: '#' },
+    { icon: Users, label: t('clients'), href: '/admin/clients' },
     { icon: UserCog, label: t('users'), href: '#' },
     { icon: ShoppingBasket, label: t('products'), href: '#' },
     { icon: CalendarCheck, label: t('reservations'), href: '#' },
@@ -55,13 +56,6 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
     { icon: ClipboardList, label: t('orders'), href: '#' },
     { icon: Bot, label: t('bot_management'), href: '#' },
   ];
-
-  const [activePath, setActivePath] = React.useState('');
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setActivePath(window.location.pathname);
-    }
-  }, []);
 
   return (
     <SidebarProvider>
@@ -80,13 +74,13 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
               <SidebarMenuItem key={index}>
                 <SidebarMenuButton
                   href={item.href}
-                  isActive={activePath === item.href}
+                  isActive={pathname === item.href}
                   asChild
                   tooltip={{
                     children: item.label,
                   }}
                 >
-                  <Link href={item.href} onClick={() => setActivePath(item.href)}>
+                  <Link href={item.href}>
                     <item.icon />
                     <span>{item.label}</span>
                   </Link>

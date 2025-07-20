@@ -31,5 +31,20 @@
   "snacks": "Snacks",
   "bebidas": "Bebidas",
   "postres": "Postres",
-  "register": "Regístrate"
+  "register": "Regístrate",
+  "client_management_subtitle": "Gestiona tu lista de clientes",
+  "add_client": "Añadir Cliente",
+  "edit_client": "Editar Cliente",
+  "edit_client_description": "Realiza cambios en el perfil del cliente aquí. Haz clic en guardar cuando hayas terminado.",
+  "add_client_description": "Añade un nuevo cliente a tu lista. Haz clic en crear cuando hayas terminado.",
+  "name": "Nombre",
+  "phone": "Teléfono",
+  "cancel": "Cancelar",
+  "save_changes": "Guardar Cambios",
+  "create_client": "Crear Cliente",
+  "actions": "Acciones",
+  "edit": "Editar",
+  "delete": "Eliminar",
+  "delete_confirmation_title": "¿Estás completamente seguro?",
+  "delete_confirmation_description": "Esta acción no se puede deshacer. Esto eliminará permanentemente el registro del cliente."
 }
