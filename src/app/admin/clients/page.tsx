@@ -10,8 +10,10 @@ import {
   doc,
   query,
   orderBy,
+  writeBatch,
+  where,
 } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { auth, db } from '@/lib/firebase';
 import {
   Table,
   TableBody,
@@ -54,16 +56,22 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Pencil, PlusCircle, Trash2 } from 'lucide-react';
+import { KeyRound, Pencil, PlusCircle, Trash2 } from 'lucide-react';
 import { useLanguage } from '@/contexts/language-provider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 
 const clientSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(1, 'Phone is required'),
+  password: z.string().optional(),
+  role: z.string().default('cliente'),
 });
 
 type Client = z.infer<typeof clientSchema>;
@@ -75,7 +83,9 @@ export default function ClientsPage() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isFormOpen, setIsFormOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [editingClient, setEditingClient] = React.useState<Client | null>(null);
+  const [editingClient, setEditingClient] = React.useState<Client | null>(
+    null
+  );
 
   const form = useForm<Client>({
     resolver: zodResolver(clientSchema),
@@ -83,6 +93,8 @@ export default function ClientsPage() {
       name: '',
       email: '',
       phone: '',
+      password: '',
+      role: 'cliente',
     },
   });
 
@@ -107,7 +119,7 @@ export default function ClientsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [toast]);
 
   React.useEffect(() => {
     fetchClients();
@@ -116,9 +128,15 @@ export default function ClientsPage() {
   React.useEffect(() => {
     if (isFormOpen) {
       if (editingClient) {
-        form.reset(editingClient);
+        form.reset({ ...editingClient, password: '' });
       } else {
-        form.reset({ name: '', email: '', phone: '' });
+        form.reset({
+          name: '',
+          email: '',
+          phone: '',
+          password: '',
+          role: 'cliente',
+        });
       }
     }
   }, [isFormOpen, editingClient, form]);
@@ -127,12 +145,55 @@ export default function ClientsPage() {
     setIsSubmitting(true);
     try {
       if (editingClient && editingClient.id) {
+        // Update existing client
         const clientDoc = doc(db, 'clients', editingClient.id);
-        await updateDoc(clientDoc, data);
-        toast({ title: 'Éxito', description: 'Cliente actualizado correctamente.' });
+        const { password, ...clientData } = data; // Don't store password in firestore
+        await updateDoc(clientDoc, clientData);
+        toast({
+          title: 'Éxito',
+          description: 'Cliente actualizado correctamente.',
+        });
       } else {
-        await addDoc(clientsCollectionRef, data);
-        toast({ title: 'Éxito', description: 'Cliente creado correctamente.' });
+        // Create new client and auth user
+        if (!data.password || data.password.length < 6) {
+          form.setError('password', {
+            type: 'manual',
+            message: 'La contraseña debe tener al menos 6 caracteres.',
+          });
+          setIsSubmitting(false);
+          return;
+        }
+
+        try {
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            data.email,
+            data.password
+          );
+          const user = userCredential.user;
+
+          const { password, ...clientData } = data;
+          await addDoc(clientsCollectionRef, {
+            ...clientData,
+            uid: user.uid, // Link firestore doc to auth user
+            role: 'cliente',
+          });
+
+          toast({
+            title: 'Éxito',
+            description: 'Cliente y usuario creados correctamente.',
+          });
+        } catch (authError: any) {
+          if (authError.code === 'auth/email-already-in-use') {
+            toast({
+              variant: 'destructive',
+              title: 'Error de creación',
+              description: 'Este correo electrónico ya está registrado.',
+            });
+          } else {
+            throw authError; // Re-throw other auth errors
+          }
+        }
       }
       await fetchClients();
       setIsFormOpen(false);
@@ -142,7 +203,7 @@ export default function ClientsPage() {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'No se pudo guardar el cliente.',
+        description: 'No se pudo guardar el cliente. Verifique la consola para más detalles.',
       });
     } finally {
       setIsSubmitting(false);
@@ -151,10 +212,15 @@ export default function ClientsPage() {
 
   const handleDelete = async (id?: string) => {
     if (!id) return;
+    // Note: This does not delete the user from Firebase Auth.
+    // That requires a separate, more complex flow.
     try {
       const clientDoc = doc(db, 'clients', id);
       await deleteDoc(clientDoc);
-      toast({ title: 'Éxito', description: 'Cliente eliminado correctamente.' });
+      toast({
+        title: 'Éxito',
+        description: 'Cliente eliminado correctamente.',
+      });
       await fetchClients();
     } catch (error) {
       console.error('Error deleting client: ', error);
@@ -173,7 +239,7 @@ export default function ClientsPage() {
 
   const openNewDialog = () => {
     setEditingClient(null);
-    form.reset({ name: '', email: '', phone: '' });
+    form.reset({ name: '', email: '', phone: '', password: '' });
     setIsFormOpen(true);
   };
 
@@ -182,7 +248,9 @@ export default function ClientsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold font-headline">{t('clients')}</h1>
-          <p className="text-muted-foreground">{t('client_management_subtitle')}</p>
+          <p className="text-muted-foreground">
+            {t('client_management_subtitle')}
+          </p>
         </div>
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
           <DialogTrigger asChild>
@@ -193,13 +261,20 @@ export default function ClientsPage() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>{editingClient ? t('edit_client') : t('add_client')}</DialogTitle>
+              <DialogTitle>
+                {editingClient ? t('edit_client') : t('add_client')}
+              </DialogTitle>
               <DialogDescription>
-                {editingClient ? t('edit_client_description') : t('add_client_description')}
+                {editingClient
+                  ? t('edit_client_description')
+                  : t('add_client_description')}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4 py-4"
+              >
                 <FormField
                   control={form.control}
                   name="name"
@@ -220,7 +295,11 @@ export default function ClientsPage() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="john.doe@example.com" {...field} />
+                        <Input
+                          placeholder="john.doe@example.com"
+                          {...field}
+                          readOnly={!!editingClient}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -239,9 +318,36 @@ export default function ClientsPage() {
                     </FormItem>
                   )}
                 />
+                {!editingClient && (
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Contraseña</FormLabel>
+                        <FormControl>
+                           <div className="relative">
+                            <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input
+                              type="password"
+                              placeholder="••••••••"
+                              className="pl-10"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 <DialogFooter>
                   <DialogClose asChild>
-                    <Button type="button" variant="secondary" disabled={isSubmitting}>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      disabled={isSubmitting}
+                    >
                       {t('cancel')}
                     </Button>
                   </DialogClose>
@@ -320,7 +426,9 @@ export default function ClientsPage() {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>{t('delete_confirmation_title')}</AlertDialogTitle>
+                          <AlertDialogTitle>
+                            {t('delete_confirmation_title')}
+                          </AlertDialogTitle>
                           <AlertDialogDescription>
                             {t('delete_confirmation_description')}
                           </AlertDialogDescription>
