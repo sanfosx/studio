@@ -32,13 +32,18 @@ import { Separator } from '@/components/ui/separator';
 import AppHeader from '@/components/header';
 import { Logo } from '@/components/icons';
 import Link from 'next/link';
+import { useAuth, ProtectedRoute } from '@/contexts/auth-provider';
+import { useRouter } from 'next/navigation';
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push('/login');
+  };
 
   const menuItems = [
     { icon: LayoutDashboard, label: t('dashboard'), href: '/admin/dashboard' },
@@ -51,15 +56,12 @@ export default function AdminLayout({
     { icon: Bot, label: t('bot_management'), href: '#' },
   ];
 
-  // A simple way to get the active path.
-  // In a real app, you'd use something like usePathname from next/navigation.
-  const [activePath, setActivePath] = React.useState('/admin/dashboard');
+  const [activePath, setActivePath] = React.useState('');
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       setActivePath(window.location.pathname);
     }
   }, []);
-
 
   return (
     <SidebarProvider>
@@ -109,7 +111,7 @@ export default function AdminLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip={{ children: t('logout') }}>
+              <SidebarMenuButton onClick={handleLogout} tooltip={{ children: t('logout') }}>
                 <LogOut />
                 <span>{t('logout')}</span>
               </SidebarMenuButton>
@@ -123,14 +125,14 @@ export default function AdminLayout({
                 alt="Admin"
                 data-ai-hint="user avatar"
               />
-              <AvatarFallback>AD</AvatarFallback>
+              <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
               <span className="font-semibold text-sm text-sidebar-foreground">
-                Admin User
+                {user?.displayName || 'Admin User'}
               </span>
               <span className="text-xs text-sidebar-foreground/70">
-                admin@sabores.com
+                {user?.email}
               </span>
             </div>
           </div>
@@ -143,5 +145,17 @@ export default function AdminLayout({
         </div>
       </SidebarInset>
     </SidebarProvider>
+  );
+}
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <ProtectedRoute>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </ProtectedRoute>
   );
 }
