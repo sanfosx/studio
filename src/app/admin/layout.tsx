@@ -34,6 +34,8 @@ import { Logo } from '@/components/icons';
 import Link from 'next/link';
 import { useAuth, ProtectedRoute } from '@/contexts/auth-provider';
 import { useRouter, usePathname } from 'next/navigation';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
@@ -41,13 +43,30 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  React.useEffect(() => {
+    const checkUserRole = async () => {
+        if (user) {
+            const q = query(collection(db, "clients"), where("uid", "==", user.uid));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0].data();
+                if (userDoc.role === 'cliente') {
+                    router.push('/');
+                }
+            }
+        }
+    };
+    checkUserRole();
+  }, [user, router]);
+
+
   const handleLogout = async () => {
     await signOut();
     router.push('/login');
   };
 
   const menuItems = [
-    { icon: LayoutDashboard, label: t('dashboard'), href: '/admin/dashboard' },
+    { icon: LayoutDashboard, label: t('dashboard'), href: '/admin' },
     { icon: Users, label: t('clients'), href: '/admin/clients' },
     { icon: UserCog, label: t('users'), href: '#' },
     { icon: ShoppingBasket, label: t('products'), href: '#' },

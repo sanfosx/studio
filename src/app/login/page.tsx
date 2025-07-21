@@ -66,7 +66,6 @@ export default function LoginPage() {
     try {
       const userCredential = await signIn(data.email, data.password);
       
-      // Check user role from firestore
       const q = query(collection(db, "clients"), where("uid", "==", userCredential.user.uid));
       const querySnapshot = await getDocs(q);
 
@@ -78,7 +77,6 @@ export default function LoginPage() {
             router.push('/admin');
         }
       } else {
-        // Default to admin if not found in clients (or handle as error)
         router.push('/admin');
       }
 
@@ -114,6 +112,7 @@ export default function LoginPage() {
         description: "Tu cuenta ha sido creada. Ahora puedes iniciar sesión.",
       });
       setActiveTab('login');
+      registerForm.reset();
 
     } catch (error: any) {
         if(error.code === 'auth/email-already-in-use') {
@@ -137,7 +136,19 @@ export default function LoginPage() {
 
   React.useEffect(() => {
     if (user) {
-        router.push('/admin'); // Redirect if already logged in
+        const checkRoleAndRedirect = async () => {
+            const q = query(collection(db, "clients"), where("uid", "==", user.uid));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0].data();
+                if (userDoc.role === 'cliente') {
+                    router.push('/');
+                    return;
+                }
+            }
+            router.push('/admin');
+        }
+        checkRoleAndRedirect();
     }
   }, [user, router]);
 
@@ -269,4 +280,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
