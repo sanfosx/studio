@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -115,7 +116,7 @@ export default function LandingPage() {
           </nav>
           <div className="flex items-center gap-2">
             <Button asChild size="sm" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-shadow">
-              <Link href="#">{T.register}</Link>
+              <Link href="/login">{T.register}</Link>
             </Button>
             <LanguageSwitcher />
             <ThemeToggle />

@@ -1,8 +1,9 @@
+
 'use client';
 
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { onAuthStateChanged, User, signInWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth, isFirebaseConfigured } from '@/lib/firebase';
+import { onAuthStateChanged, User, signInWithEmailAndPassword, signOut as firebaseSignOut, Auth } from 'firebase/auth';
+import { auth as firebaseAuth, isFirebaseConfigured } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
@@ -10,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, pass: string) => Promise<any>;
   signOut: () => Promise<void>;
+  auth: Auth | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -17,6 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [auth, setAuth] = useState<Auth | null>(null);
   const firebaseConfigured = isFirebaseConfigured();
 
   useEffect(() => {
@@ -24,7 +27,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
       return;
     }
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    setAuth(firebaseAuth);
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
       setUser(user);
       setLoading(false);
     });
@@ -36,15 +40,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!firebaseConfigured) {
       return Promise.reject(new Error("Firebase not configured"));
     }
-    return signInWithEmailAndPassword(auth, email, pass);
+    return signInWithEmailAndPassword(firebaseAuth, email, pass);
   }
 
   const signOut = async () => {
     if (!firebaseConfigured) return;
-    await firebaseSignOut(auth);
+    await firebaseSignOut(firebaseAuth);
   };
 
-  const value = { user, loading, signIn, signOut };
+  const value = { user, loading, signIn, signOut, auth };
 
   return (
     <AuthContext.Provider value={value}>
