@@ -35,6 +35,7 @@ const loginSchema = z.object({
 const registerSchema = z.object({
     name: z.string().min(1, 'El nombre es requerido'),
     phone: z.string().min(1, 'El teléfono es requerido'),
+    address: z.string().min(1, 'La dirección es requerida'),
     email: z.string().email({ message: 'Por favor, introduce un email válido.' }),
     password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres.' }),
 });
@@ -57,7 +58,7 @@ export default function LoginPage() {
 
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: '', phone: '', email: '', password: '' },
+    defaultValues: { name: '', phone: '', address: '', email: '', password: '' },
   });
 
   const onLoginSubmit: SubmitHandler<LoginFormValues> = async (data) => {
@@ -104,6 +105,7 @@ export default function LoginPage() {
         name: data.name,
         email: data.email,
         phone: data.phone,
+        address: data.address,
         role: 'cliente'
       });
       
@@ -237,6 +239,19 @@ export default function LoginPage() {
                                 <FormLabel>Teléfono</FormLabel>
                                 <FormControl>
                                     <Input placeholder="555-123-4567" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={registerForm.control}
+                            name="address"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Dirección</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Av. Siempre Viva 742" {...field} />
                                 </FormControl>
                                 <FormMessage />
                                 </FormItem>

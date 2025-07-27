@@ -25,12 +25,13 @@ import { Badge } from '@/components/ui/badge';
 const profileSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
   phone: z.string().min(1, 'El teléfono es requerido'),
+  address: z.string().min(1, 'La dirección es requerida'),
   email: z.string().email(),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
-type EditableField = 'name' | 'phone';
+type EditableField = 'name' | 'phone' | 'address';
 
 
 // Mock data for orders and reservations
@@ -225,6 +226,7 @@ function ProfilePageContent() {
                         <CardContent className='space-y-6'>
                             {renderField('Nombre', 'name')}
                             {renderField('Teléfono', 'phone')}
+                            {renderField('Dirección', 'address')}
                             
                             <div className='space-y-2'>
                                 <label className="text-sm font-medium">Email</label>
@@ -323,5 +325,3 @@ export default function ProfilePage() {
         </ProtectedRoute>
     )
 }
-
-    

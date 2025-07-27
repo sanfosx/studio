@@ -71,6 +71,7 @@ const clientSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(1, 'Phone is required'),
+  address: z.string().min(1, 'Address is required'),
   role: z.string().default('cliente'),
 });
 
@@ -93,6 +94,7 @@ export default function ClientsPage() {
       name: '',
       email: '',
       phone: '',
+      address: '',
       role: 'cliente',
     },
   });
@@ -133,6 +135,7 @@ export default function ClientsPage() {
           name: '',
           email: '',
           phone: '',
+          address: '',
           role: 'cliente',
         });
       }
@@ -156,46 +159,60 @@ export default function ClientsPage() {
       } else {
         const tempPassword = generateTempPassword();
         try {
-          // Create user in Auth
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            data.email,
-            tempPassword
-          );
-          const user = userCredential.user;
-
-          // Add client to Firestore
-          await addDoc(clientsCollectionRef, {
+          const clientData = {
             ...data,
-            uid: user.uid,
             role: 'cliente',
-          });
+          };
+          
+          const docRef = await addDoc(clientsCollectionRef, clientData);
 
-          // Send password reset email
-          await sendPasswordResetEmail(auth, data.email);
+          try {
+             const userCredential = await createUserWithEmailAndPassword(
+              auth,
+              data.email,
+              tempPassword
+            );
+            const user = userCredential.user;
 
-          toast({
-            title: 'Éxito',
-            description:
-              'Cliente creado. Se ha enviado un enlace para restablecer la contraseña.',
-          });
-        } catch (authError: any) {
-          if (authError.code === 'auth/email-already-in-use') {
-            toast({
-              variant: 'destructive',
-              title: 'Error de creación',
-              description: 'Este correo electrónico ya está registrado.',
+            await updateDoc(docRef, { uid: user.uid });
+
+            await sendPasswordResetEmail(auth, data.email);
+
+             toast({
+              title: 'Éxito',
+              description:
+                'Cliente creado. Se ha enviado un enlace para restablecer la contraseña.',
             });
-          } else {
-            console.error('Authentication error:', authError);
-            toast({
+          } catch (authError: any) {
+             await deleteDoc(docRef);
+
+            if (authError.code === 'auth/email-already-in-use') {
+                toast({
                 variant: 'destructive',
-                title: 'Error de autenticación',
-                description: 'No se pudo crear el usuario. Verifique la consola.'
-            })
+                title: 'Error de creación',
+                description: 'Este correo electrónico ya está registrado.',
+                });
+            } else {
+                console.error('Authentication error:', authError);
+                toast({
+                    variant: 'destructive',
+                    title: 'Error de autenticación',
+                    description: 'No se pudo crear el usuario. Verifique la consola.'
+                })
+            }
+             setIsSubmitting(false);
+             return;
           }
-          setIsSubmitting(false);
-          return;
+
+        } catch (dbError) {
+             console.error('Firestore error:', dbError);
+             toast({
+                variant: 'destructive',
+                title: 'Error de Base de Datos',
+                description: 'No se pudo guardar el cliente en la base de datos.'
+            });
+             setIsSubmitting(false);
+             return;
         }
       }
       await fetchClients();
@@ -259,7 +276,7 @@ export default function ClientsPage() {
 
   const openNewDialog = () => {
     setEditingClient(null);
-    form.reset({ name: '', email: '', phone: '' });
+    form.reset({ name: '', email: '', phone: '', address: '' });
     setIsFormOpen(true);
   };
 
@@ -338,6 +355,19 @@ export default function ClientsPage() {
                     </FormItem>
                   )}
                 />
+                 <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Dirección</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Av. Siempre Viva 742" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <DialogFooter>
                   <DialogClose asChild>
                     <Button
@@ -369,6 +399,7 @@ export default function ClientsPage() {
               <TableHead>{t('name')}</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>{t('phone')}</TableHead>
+              <TableHead>Dirección</TableHead>
               <TableHead className="text-right">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -385,6 +416,9 @@ export default function ClientsPage() {
                   <TableCell>
                     <Skeleton className="h-5 w-32" />
                   </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-48" />
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Skeleton className="h-8 w-8" />
@@ -395,7 +429,7 @@ export default function ClientsPage() {
               ))
             ) : clients.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center">
                   No se encontraron clientes.
                 </TableCell>
               </TableRow>
@@ -405,6 +439,7 @@ export default function ClientsPage() {
                   <TableCell className="font-medium">{client.name}</TableCell>
                   <TableCell>{client.email}</TableCell>
                   <TableCell>{client.phone}</TableCell>
+                  <TableCell>{client.address}</TableCell>
                   <TableCell className="text-right">
                     <Button
                       variant="ghost"
