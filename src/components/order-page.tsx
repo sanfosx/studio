@@ -11,10 +11,13 @@ import { LanguageSwitcher, ThemeToggle } from './header';
 import { useAuth } from '@/contexts/auth-provider';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
-import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle } from 'lucide-react';
+import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Label } from './ui/label';
 
 const menuData = {
   pizzas: [
@@ -57,6 +60,8 @@ export default function OrderPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [cart, setCart] = React.useState<CartItem[]>([]);
+  const [deliveryOption, setDeliveryOption] = React.useState('pickup');
+
 
   const translations = {
     en: {
@@ -75,7 +80,13 @@ export default function OrderPage() {
       orderPlaced: 'Order Placed!',
       orderPlacedDesc: 'Your order has been successfully placed.',
       myProfile: 'My Profile',
-      logout: 'Logout'
+      logout: 'Logout',
+      deliveryMethod: 'Delivery Method',
+      deliveryMethodDesc: 'How would you like to receive your order?',
+      pickup: 'Store Pickup',
+      delivery: 'Home Delivery',
+      deliveryAddress: 'Your order will be sent to: 123 Main St, Anytown, USA.',
+      confirmOrder: 'Confirm Order'
     },
     es: {
       orderOnline: 'Pedir Online',
@@ -93,7 +104,13 @@ export default function OrderPage() {
       orderPlaced: '¡Pedido Realizado!',
       orderPlacedDesc: 'Tu pedido ha sido realizado con éxito.',
       myProfile: 'Mi Perfil',
-      logout: 'Cerrar Sesión'
+      logout: 'Cerrar Sesión',
+      deliveryMethod: 'Método de Entrega',
+      deliveryMethodDesc: '¿Cómo te gustaría recibir tu pedido?',
+      pickup: 'Retiro en local',
+      delivery: 'Envío a domicilio',
+      deliveryAddress: 'Tu pedido se enviará a: Av. Siempre Viva 742, Springfield.',
+      confirmOrder: 'Confirmar Pedido'
     }
   };
 
@@ -129,11 +146,10 @@ export default function OrderPage() {
   const tax = subtotal * 0.05;
   const total = subtotal + tax;
 
-  const handlePlaceOrder = () => {
-    if (cart.length === 0) return;
+  const handleConfirmOrder = () => {
     toast({
         title: T.orderPlaced,
-        description: T.orderPlacedDesc,
+        description: `${T.orderPlacedDesc} (${deliveryOption === 'pickup' ? T.pickup : T.delivery})`,
     });
     setCart([]);
   }
@@ -283,7 +299,44 @@ export default function OrderPage() {
                       <span>{T.total}</span>
                       <span>${total.toFixed(2)}</span>
                     </div>
-                    <Button onClick={handlePlaceOrder} size="lg" className="w-full mt-4">{T.placeOrder}</Button>
+                     <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                         <Button size="lg" className="w-full mt-4">{T.placeOrder}</Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{T.deliveryMethod}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {T.deliveryMethodDesc}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <RadioGroup defaultValue={deliveryOption} onValueChange={setDeliveryOption} className='my-4 space-y-4'>
+                          <Label htmlFor="pickup" className="flex items-center gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                             <Store className='text-primary' />
+                             <div className='flex-1'>
+                                <p className='font-semibold'>{T.pickup}</p>
+                             </div>
+                             <RadioGroupItem value="pickup" id="pickup" />
+                          </Label>
+                           <Label htmlFor="delivery" className="flex items-center gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                              <Bike className='text-primary'/>
+                             <div className='flex-1'>
+                                <p className='font-semibold'>{T.delivery}</p>
+                                {deliveryOption === 'delivery' && (
+                                     <p className='text-xs text-muted-foreground mt-1'>{T.deliveryAddress}</p>
+                                )}
+                             </div>
+                             <RadioGroupItem value="delivery" id="delivery" />
+                          </Label>
+                        </RadioGroup>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction onClick={handleConfirmOrder}>
+                            {T.confirmOrder}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </CardFooter>
                 )}
               </Card>
