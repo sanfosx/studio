@@ -102,16 +102,16 @@ export default function LandingPage() {
   const T = translations[language];
 
   const renderMenuItems = (items: typeof menu.pizzas) => (
-    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {items.map((item, index) => (
         <Card key={item.name} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105" style={{ animationDelay: `${index * 100}ms` }}>
-           <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-48 object-cover" />
-          <CardHeader>
-            <CardTitle>{item.name}</CardTitle>
+           <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-40 object-cover" />
+          <CardHeader className="p-4">
+            <CardTitle className="text-lg">{item.name}</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm h-10">{item.description}</p>
-            <p className="font-bold text-primary mt-4">{item.price}</p>
+          <CardContent className="p-4 pt-0">
+            <p className="text-muted-foreground text-sm h-12">{item.description}</p>
+            <p className="font-bold text-primary mt-2">{item.price}</p>
           </CardContent>
         </Card>
       ))}
@@ -293,3 +293,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    

@@ -249,14 +249,14 @@ export default function OrderPage() {
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {items.map(item => (
         <Card key={item.id} className="flex flex-col">
-          <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-48 object-cover rounded-t-lg" />
-          <CardHeader>
-            <CardTitle>{item.name}</CardTitle>
+          <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-40 object-cover rounded-t-lg" />
+          <CardHeader className="p-4">
+            <CardTitle className="text-lg">{item.name}</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1">
-            <p className="text-muted-foreground text-sm">{item.description}</p>
+          <CardContent className="flex-1 p-4 pt-0">
+            <p className="text-muted-foreground text-sm h-12">{item.description}</p>
           </CardContent>
-          <CardFooter className="flex justify-between items-center">
+          <CardFooter className="flex justify-between items-center p-4">
             <p className="font-bold text-lg text-primary">${item.price.toFixed(2)}</p>
             <Button onClick={() => handleAddToCart(item)}>{T.addToCart}</Button>
           </CardFooter>
@@ -533,5 +533,7 @@ export default function OrderPage() {
     </div>
   );
 }
+
+    
 
     
