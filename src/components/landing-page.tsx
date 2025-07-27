@@ -136,7 +136,7 @@ export default function LandingPage() {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="rounded-full">
-                           <UserCircle className="size-8"/>
+                           <UserCircle className="h-full w-full"/>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -287,5 +287,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
