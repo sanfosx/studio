@@ -11,7 +11,7 @@ import { LanguageSwitcher, ThemeToggle } from './header';
 import { useAuth } from '@/contexts/auth-provider';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
-import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store } from 'lucide-react';
+import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
@@ -20,6 +20,7 @@ import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from './ui/sheet';
 
 const menuData = {
   pizzas: [
@@ -63,6 +64,7 @@ export default function OrderPage() {
   const { toast } = useToast();
   const [cart, setCart] = React.useState<CartItem[]>([]);
   const [deliveryOption, setDeliveryOption] = React.useState('pickup');
+  const [isCartOpen, setIsCartOpen] = React.useState(false);
 
 
   const translations = {
@@ -155,6 +157,7 @@ export default function OrderPage() {
         description: `${T.orderPlacedDesc} (${deliveryOption === 'pickup' ? T.pickup : T.delivery})`,
     });
     setCart([]);
+    setIsCartOpen(false);
   }
 
   const handleLogout = async () => {
@@ -185,6 +188,7 @@ export default function OrderPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-secondary">
+       <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
           <Link href="/" className="flex items-center gap-2">
@@ -198,7 +202,7 @@ export default function OrderPage() {
                     <span className="sr-only">Home</span>
                 </Link>
             </Button>
-            <div className="relative">
+            <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Shopping Cart">
                     <ShoppingCart />
                     {totalItems > 0 && (
@@ -207,7 +211,7 @@ export default function OrderPage() {
                         </Badge>
                     )}
                 </Button>
-            </div>
+            </SheetTrigger>
             {user ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -246,8 +250,7 @@ export default function OrderPage() {
       </header>
 
       <div className="container mx-auto flex-1 px-4 md:px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
-          <main className="lg:col-span-2">
+        <main>
             <h1 className="text-4xl font-extrabold font-headline mb-8">{T.orderOnline}</h1>
               <div className="text-center">
                 <Tabs defaultValue="pizzas" className="w-full">
@@ -272,108 +275,107 @@ export default function OrderPage() {
                 </Tabs>
               </div>
           </main>
-
-          <aside className="lg:col-span-1">
-            <div className="sticky top-24">
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <ShoppingCart />
-                    {T.yourOrder}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {cart.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-8">{T.emptyCart}</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {cart.map(item => (
-                        <div key={item.id} className="flex items-center justify-between">
-                          <div className='flex-1'>
-                            <p className="font-semibold">{item.name}</p>
-                            <p className="text-sm text-muted-foreground">${item.price.toFixed(2)}</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}>
-                              <Minus className="h-4 w-4" />
-                            </Button>
-                            <span>{item.quantity}</span>
-                            <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}>
-                              <Plus className="h-4 w-4" />
-                            </Button>
-                             <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500 hover:text-red-600" onClick={() => handleUpdateQuantity(item.id, 0)}>
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                          <p className="w-16 text-right font-medium">${(item.price * item.quantity).toFixed(2)}</p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-                {cart.length > 0 && (
-                  <CardFooter className="flex-col items-stretch space-y-4 pt-4">
-                    <Separator />
-                    <div className="flex justify-between">
-                      <span>{T.subtotal}</span>
-                      <span>${subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>{language === 'es' ? T.impuestos : T.tax}</span>
-                      <span>${tax.toFixed(2)}</span>
-                    </div>
-                    <Separator />
-                    <div className="flex justify-between font-bold text-lg">
-                      <span>{T.total}</span>
-                      <span>${total.toFixed(2)}</span>
-                    </div>
-                     <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                         <Button size="lg" className="w-full mt-4">{T.placeOrder}</Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>{T.deliveryMethod}</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {T.deliveryMethodDesc}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <RadioGroup defaultValue={deliveryOption} onValueChange={setDeliveryOption} className='my-4 space-y-4'>
-                          <Label htmlFor="pickup" className="flex items-center gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                             <Store className='text-primary' />
-                             <div className='flex-1'>
-                                <p className='font-semibold'>{T.pickup}</p>
-                             </div>
-                             <RadioGroupItem value="pickup" id="pickup" />
-                          </Label>
-                           <Label htmlFor="delivery" className="flex items-center gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                              <Bike className='text-primary'/>
-                             <div className='flex-1'>
-                                <p className='font-semibold'>{T.delivery}</p>
-                                {deliveryOption === 'delivery' && (
-                                     <p className='text-xs text-muted-foreground mt-1'>{T.deliveryAddress}</p>
-                                )}
-                             </div>
-                             <RadioGroupItem value="delivery" id="delivery" />
-                          </Label>
-                        </RadioGroup>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction onClick={handleConfirmOrder}>
-                            {T.confirmOrder}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </CardFooter>
-                )}
-              </Card>
-            </div>
-          </aside>
-        </div>
       </div>
+
+       <SheetContent className="flex flex-col">
+            <SheetHeader>
+                <SheetTitle className="flex items-center gap-2">
+                     <ShoppingCart />
+                    {T.yourOrder}
+                </SheetTitle>
+            </SheetHeader>
+             <div className="flex-1 overflow-y-auto">
+                {cart.length === 0 ? (
+                <div className="flex flex-col h-full items-center justify-center text-center">
+                    <ShoppingCart className="h-16 w-16 text-muted-foreground" />
+                    <p className="text-muted-foreground text-center mt-4">{T.emptyCart}</p>
+                </div>
+                ) : (
+                <div className="space-y-4 pr-4">
+                    {cart.map(item => (
+                    <div key={item.id} className="flex items-center justify-between">
+                        <div className='flex-1'>
+                        <p className="font-semibold">{item.name}</p>
+                        <p className="text-sm text-muted-foreground">${item.price.toFixed(2)}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                        <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}>
+                            <Minus className="h-4 w-4" />
+                        </Button>
+                        <span>{item.quantity}</span>
+                        <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}>
+                            <Plus className="h-4 w-4" />
+                        </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500 hover:text-red-600" onClick={() => handleUpdateQuantity(item.id, 0)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                        </div>
+                        <p className="w-16 text-right font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                    </div>
+                    ))}
+                </div>
+                )}
+            </div>
+            {cart.length > 0 && (
+                <SheetFooter>
+                    <div className="flex-col items-stretch space-y-4 pt-4 w-full">
+                        <Separator />
+                        <div className="flex justify-between">
+                        <span>{T.subtotal}</span>
+                        <span>${subtotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm text-muted-foreground">
+                        <span>{language === 'es' ? T.impuestos : T.tax}</span>
+                        <span>${tax.toFixed(2)}</span>
+                        </div>
+                        <Separator />
+                        <div className="flex justify-between font-bold text-lg">
+                        <span>{T.total}</span>
+                        <span>${total.toFixed(2)}</span>
+                        </div>
+                        <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button size="lg" className="w-full mt-4">{T.placeOrder}</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>{T.deliveryMethod}</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {T.deliveryMethodDesc}
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <RadioGroup defaultValue={deliveryOption} onValueChange={setDeliveryOption} className='my-4 space-y-4'>
+                            <Label htmlFor="pickup" className="flex items-center gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                <Store className='text-primary' />
+                                <div className='flex-1'>
+                                    <p className='font-semibold'>{T.pickup}</p>
+                                </div>
+                                <RadioGroupItem value="pickup" id="pickup" />
+                            </Label>
+                                <Label htmlFor="delivery" className="flex items-center gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                <Bike className='text-primary'/>
+                                <div className='flex-1'>
+                                    <p className='font-semibold'>{T.delivery}</p>
+                                    {deliveryOption === 'delivery' && (
+                                        <p className='text-xs text-muted-foreground mt-1'>{T.deliveryAddress}</p>
+                                    )}
+                                </div>
+                                <RadioGroupItem value="delivery" id="delivery" />
+                            </Label>
+                            </RadioGroup>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleConfirmOrder}>
+                                {T.confirmOrder}
+                            </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
+                </SheetFooter>
+            )}
+       </SheetContent>
+      </Sheet>
     </div>
   );
 }
-
-    
