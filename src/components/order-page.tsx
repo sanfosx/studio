@@ -249,26 +249,28 @@ export default function OrderPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
           <main className="lg:col-span-2">
             <h1 className="text-4xl font-extrabold font-headline mb-8">{T.orderOnline}</h1>
-              <Tabs defaultValue="pizzas" className="w-full">
-                <TabsList className="mb-8">
-                  <TabsTrigger value="pizzas">{T.pizzas}</TabsTrigger>
-                  <TabsTrigger value="snacks">{T.snacks}</TabsTrigger>
-                  <TabsTrigger value="drinks">{language === 'es' ? T.bebidas : T.drinks}</TabsTrigger>
-                  <TabsTrigger value="desserts">{language === 'es' ? T.postres : T.desserts}</TabsTrigger>
-                </TabsList>
-                <TabsContent value="pizzas">
-                  {renderMenuItems(menuData.pizzas)}
-                </TabsContent>
-                <TabsContent value="snacks">
-                  {renderMenuItems(menuData.snacks)}
-                </TabsContent>
-                <TabsContent value="drinks">
-                  {renderMenuItems(menuData.drinks)}
-                </TabsContent>
-                <TabsContent value="desserts">
-                  {renderMenuItems(menuData.desserts)}
-                </TabsContent>
-              </Tabs>
+              <div className="text-center">
+                <Tabs defaultValue="pizzas" className="w-full">
+                  <TabsList className="bg-transparent border-2 border-primary/20 p-1 rounded-full mb-8">
+                    <TabsTrigger value="pizzas" className="rounded-full">{T.pizzas}</TabsTrigger>
+                    <TabsTrigger value="snacks" className="rounded-full">{T.snacks}</TabsTrigger>
+                    <TabsTrigger value="drinks" className="rounded-full">{language === 'es' ? T.bebidas : T.drinks}</TabsTrigger>
+                    <TabsTrigger value="desserts" className="rounded-full">{language === 'es' ? T.postres : T.desserts}</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="pizzas">
+                    {renderMenuItems(menuData.pizzas)}
+                  </TabsContent>
+                  <TabsContent value="snacks">
+                    {renderMenuItems(menuData.snacks)}
+                  </TabsContent>
+                  <TabsContent value="drinks">
+                    {renderMenuItems(menuData.drinks)}
+                  </TabsContent>
+                  <TabsContent value="desserts">
+                    {renderMenuItems(menuData.desserts)}
+                  </TabsContent>
+                </Tabs>
+              </div>
           </main>
 
           <aside className="lg:col-span-1">
@@ -373,3 +375,5 @@ export default function OrderPage() {
     </div>
   );
 }
+
+    
