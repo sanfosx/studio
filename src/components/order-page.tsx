@@ -21,6 +21,8 @@ import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from './ui/sheet';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 const menuData = {
   pizzas: [
@@ -57,6 +59,10 @@ type CartItem = MenuItem & {
   quantity: number;
 };
 
+type ClientData = {
+    address: string;
+};
+
 export default function OrderPage() {
   const { language } = useLanguage();
   const { user, signOut } = useAuth();
@@ -65,6 +71,21 @@ export default function OrderPage() {
   const [cart, setCart] = React.useState<CartItem[]>([]);
   const [deliveryOption, setDeliveryOption] = React.useState('pickup');
   const [isCartOpen, setIsCartOpen] = React.useState(false);
+  const [clientData, setClientData] = React.useState<ClientData | null>(null);
+
+  React.useEffect(() => {
+    const fetchClientData = async () => {
+        if(user) {
+            const q = query(collection(db, "clients"), where("uid", "==", user.uid));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                const clientDoc = querySnapshot.docs[0];
+                setClientData(clientDoc.data() as ClientData);
+            }
+        }
+    };
+    fetchClientData();
+  }, [user]);
 
 
   const translations = {
@@ -89,7 +110,8 @@ export default function OrderPage() {
       deliveryMethodDesc: 'How would you like to receive your order?',
       pickup: 'Store Pickup',
       delivery: 'Home Delivery',
-      deliveryAddress: 'Your order will be sent to: 123 Main St, Anytown, USA.',
+      deliveryAddressPrompt: 'Your order will be sent to:',
+      noAddressRegistered: 'No address registered. Please add one in your profile.',
       confirmOrder: 'Confirm Order'
     },
     es: {
@@ -113,7 +135,8 @@ export default function OrderPage() {
       deliveryMethodDesc: '¿Cómo te gustaría recibir tu pedido?',
       pickup: 'Retiro en local',
       delivery: 'Envío a domicilio',
-      deliveryAddress: 'Tu pedido se enviará a: Av. Siempre Viva 742, Springfield.',
+      deliveryAddressPrompt: 'Tu pedido se enviará a:',
+      noAddressRegistered: 'No hay dirección registrada. Por favor, añade una en tu perfil.',
       confirmOrder: 'Confirmar Pedido'
     }
   };
@@ -357,10 +380,15 @@ export default function OrderPage() {
                                 <div className='flex-1'>
                                     <p className='font-semibold'>{T.delivery}</p>
                                     {deliveryOption === 'delivery' && (
-                                        <p className='text-xs text-muted-foreground mt-1'>{T.deliveryAddress}</p>
+                                        <p className='text-xs text-muted-foreground mt-1'>
+                                            {T.deliveryAddressPrompt}
+                                            <span className='font-medium text-foreground ml-1'>
+                                                {clientData?.address || T.noAddressRegistered}
+                                            </span>
+                                        </p>
                                     )}
                                 </div>
-                                <RadioGroupItem value="delivery" id="delivery" />
+                                <RadioGroupItem value="delivery" id="delivery" disabled={!clientData?.address} />
                             </Label>
                             </RadioGroup>
                             <AlertDialogFooter>
@@ -379,3 +407,5 @@ export default function OrderPage() {
     </div>
   );
 }
+
+    
