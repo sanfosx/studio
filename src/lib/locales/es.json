@@ -1,3 +1,4 @@
+
 {
   "app_name": "Pizzeria Los Genios",
   "dashboard": "Panel",
@@ -46,5 +47,9 @@
   "edit": "Editar",
   "delete": "Eliminar",
   "delete_confirmation_title": "¿Estás completamente seguro?",
-  "delete_confirmation_description": "Esta acción no se puede deshacer. Esto eliminará permanentemente el registro del cliente."
+  "delete_confirmation_description": "Esta acción no se puede deshacer. Esto eliminará permanentemente el registro del cliente.",
+  "myProfile": "Mi Perfil",
+  "login": "Iniciar Sesión"
 }
+
+    

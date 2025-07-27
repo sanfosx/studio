@@ -1,3 +1,4 @@
+
 {
   "app_name": "Pizzeria Los Genios",
   "dashboard": "Dashboard",
@@ -46,5 +47,9 @@
   "edit": "Edit",
   "delete": "Delete",
   "delete_confirmation_title": "Are you absolutely sure?",
-  "delete_confirmation_description": "This action cannot be undone. This will permanently delete the client record."
+  "delete_confirmation_description": "This action cannot be undone. This will permanently delete the client record.",
+  "myProfile": "My Profile",
+  "login": "Log In"
 }
+
+    

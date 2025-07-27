@@ -7,11 +7,15 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/language-provider';
 import { Logo } from '@/components/icons';
-import { MapPin, Phone, Mail } from 'lucide-react';
+import { MapPin, Phone, Mail, User, LogOut } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { LanguageSwitcher, ThemeToggle } from './header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/auth-provider';
+import { useRouter } from 'next/navigation';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+
 
 const menu = {
   pizzas: [
@@ -38,6 +42,13 @@ const menu = {
 
 export default function LandingPage() {
   const { language } = useLanguage();
+  const { user, signOut } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push('/');
+  };
 
   const translations = {
     en: {
@@ -54,11 +65,14 @@ export default function LandingPage() {
       phone: '+1 (234) 567-890',
       email: 'reservations@pizzerialosgenios.com',
       register: 'Sign Up',
+      login: 'Log In',
       home: 'Home',
       pizzas: 'Pizzas',
       snacks: 'Snacks',
       drinks: 'Drinks',
       desserts: 'Desserts',
+      myProfile: 'My Profile',
+      logout: 'Logout'
     },
     es: {
       heroTitle: 'Pizzas Ingeniosamente Buenas',
@@ -74,11 +88,14 @@ export default function LandingPage() {
       phone: '+1 (234) 567-890',
       email: 'reservas@pizzerialosgenios.com',
       register: 'Regístrate',
+      login: 'Iniciar Sesión',
       home: 'Inicio',
       pizzas: 'Pizzas',
       snacks: 'Snacks',
       bebidas: 'Bebidas',
       postres: 'Postres',
+      myProfile: 'Mi Perfil',
+      logout: 'Cerrar Sesión'
     }
   }
 
@@ -105,7 +122,7 @@ export default function LandingPage() {
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-sm">
         <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-6">
-          <Link href="#" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <Logo className="size-8 text-primary" />
             <span className="text-xl font-bold font-headline text-primary">Pizzeria Los Genios</span>
           </Link>
@@ -115,9 +132,45 @@ export default function LandingPage() {
             <Link href="#contact" className="text-sm font-medium hover:text-primary transition-colors">{T.contact}</Link>
           </nav>
           <div className="flex items-center gap-2">
-            <Button asChild size="sm" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-shadow">
-              <Link href="/login">{T.register}</Link>
-            </Button>
+            {user ? (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+                            <Avatar className="h-10 w-10">
+                                <AvatarImage src="https://placehold.co/100x100.png" alt={user.email ?? ''} data-ai-hint="user avatar" />
+                                <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="end" forceMount>
+                        <DropdownMenuLabel className="font-normal">
+                            <div className="flex flex-col space-y-1">
+                                <p className="text-sm font-medium leading-none">{user.displayName || user.email}</p>
+                                <p className="text-xs leading-none text-muted-foreground">
+                                    {user.email}
+                                </p>
+                            </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                           <Link href="/profile">
+                                <User className="mr-2 h-4 w-4" />
+                                <span>{T.myProfile}</span>
+                           </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleLogout}>
+                            <LogOut className="mr-2 h-4 w-4" />
+                            <span>{T.logout}</span>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+            ) : (
+                <Button asChild size="sm" className="shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-shadow">
+                  <Link href="/login">{T.login}</Link>
+                </Button>
+            )}
             <LanguageSwitcher />
             <ThemeToggle />
           </div>
@@ -237,3 +290,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
