@@ -49,7 +49,14 @@
   "delete_confirmation_title": "Are you absolutely sure?",
   "delete_confirmation_description": "This action cannot be undone. This will permanently delete the client record.",
   "myProfile": "My Profile",
-  "login": "Log In"
+  "login": "Log In",
+  "paymentMethod": "Payment Method",
+  "cash": "Cash",
+  "card": "Debit/Credit Card",
+  "transfer": "Bank Transfer",
+  "wallet": "Virtual Wallet"
 }
+
+    
 
     

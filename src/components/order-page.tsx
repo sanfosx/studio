@@ -11,7 +11,7 @@ import { LanguageSwitcher, ThemeToggle } from './header';
 import { useAuth } from '@/contexts/auth-provider';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
-import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X, Pencil } from 'lucide-react';
+import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X, Pencil, Wallet, Landmark, CreditCard, DollarSign } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
@@ -65,12 +65,13 @@ type ClientData = {
 };
 
 export default function OrderPage() {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { user, signOut } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [cart, setCart] = React.useState<CartItem[]>([]);
   const [deliveryOption, setDeliveryOption] = React.useState('pickup');
+  const [paymentMethod, setPaymentMethod] = React.useState<string | null>(null);
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [clientData, setClientData] = React.useState<ClientData | null>(null);
   const [deliveryAddress, setDeliveryAddress] = React.useState('');
@@ -126,7 +127,13 @@ export default function OrderPage() {
       confirmOrder: 'Confirm Order',
       currentAddress: 'Current address:',
       changeAddress: 'Change',
-      enterAddress: 'Enter your delivery address'
+      enterAddress: 'Enter your delivery address',
+      paymentMethod: 'Payment Method',
+      paymentMethodDesc: 'Please select a payment method.',
+      cash: 'Cash',
+      card: 'Debit/Credit Card',
+      transfer: 'Bank Transfer',
+      wallet: 'Virtual Wallet',
     },
     es: {
       orderOnline: 'Pedir Online',
@@ -154,7 +161,13 @@ export default function OrderPage() {
       confirmOrder: 'Confirmar Pedido',
       currentAddress: 'Dirección actual:',
       changeAddress: 'Cambiar',
-      enterAddress: 'Ingresa tu dirección de envío'
+      enterAddress: 'Ingresa tu dirección de envío',
+      paymentMethod: 'Método de Pago',
+      paymentMethodDesc: 'Por favor, selecciona un método de pago.',
+      cash: 'Efectivo',
+      card: 'Tarjeta de Débito/Crédito',
+      transfer: 'Transferencia Bancaria',
+      wallet: 'Billetera Virtual',
     }
   };
 
@@ -213,11 +226,14 @@ export default function OrderPage() {
 
   const handleConfirmOrder = () => {
     let orderDescription = `${deliveryOption === 'pickup' ? T.pickup : `${T.delivery} a ${deliveryAddress}`}`;
+    orderDescription += `, ${t('payment_method')}: ${paymentMethod}`;
     toast({
         title: T.orderPlaced,
-        description: `${T.orderPlacedDesc} (${orderDescription})`,
+        description: `${T.orderPlacedDesc}`,
     });
     setCart([]);
+    setPaymentMethod(null);
+    setDeliveryOption('pickup');
     setIsCartOpen(false);
   }
 
@@ -225,6 +241,8 @@ export default function OrderPage() {
     await signOut();
     router.push('/');
   };
+
+  const isOrderReady = (deliveryOption === 'pickup' || (deliveryOption === 'delivery' && deliveryAddress.trim())) && paymentMethod;
 
 
   const renderMenuItems = (items: MenuItem[]) => (
@@ -406,55 +424,84 @@ export default function OrderPage() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>
-                            <AlertDialogTitle>{T.deliveryMethod}</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {T.deliveryMethodDesc}
-                            </AlertDialogDescription>
+                            <AlertDialogTitle>{T.confirmOrder}</AlertDialogTitle>
                             </AlertDialogHeader>
-                            <RadioGroup defaultValue={deliveryOption} onValueChange={setDeliveryOption} className='my-4 space-y-4'>
-                            <Label htmlFor="pickup" className="flex items-center gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                <Store className='text-primary' />
-                                <div className='flex-1'>
-                                    <p className='font-semibold'>{T.pickup}</p>
-                                </div>
-                                <RadioGroupItem value="pickup" id="pickup" />
-                            </Label>
-                             <Label htmlFor="delivery" className="flex flex-col items-start gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                <div className='flex items-center w-full'>
-                                     <Bike className='text-primary mr-4'/>
-                                    <p className='font-semibold'>{T.delivery}</p>
-                                    <RadioGroupItem value="delivery" id="delivery" className='ml-auto'/>
-                                </div>
-                                 {deliveryOption === 'delivery' && (
-                                    <div className="w-full pl-8 space-y-2 pt-2">
-                                        {isEditingAddress ? (
-                                             <Input 
-                                                value={deliveryAddress}
-                                                onChange={(e) => setDeliveryAddress(e.target.value)}
-                                                placeholder={T.enterAddress}
-                                                className="w-full"
-                                                autoFocus
-                                            />
-                                        ) : (
-                                            <div className='flex items-center w-full'>
-                                                <p className='text-sm text-muted-foreground flex-1'>
-                                                    {T.currentAddress} <span className='font-medium text-foreground'>{deliveryAddress}</span>
-                                                </p>
-                                                <Button variant="link" size="sm" onClick={() => setIsEditingAddress(true)}>
-                                                    <Pencil className="mr-2 h-3 w-3" />
-                                                    {T.changeAddress}
-                                                </Button>
-                                            </div>
-                                        )}
+                           
+                           <div className="space-y-6">
+                            <div>
+                                <Label className='font-semibold'>{T.deliveryMethod}</Label>
+                                <RadioGroup defaultValue={deliveryOption} onValueChange={setDeliveryOption} className='mt-2 space-y-2'>
+                                <Label htmlFor="pickup" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                    <Store className='text-primary' />
+                                    <p className='flex-1 font-medium'>{T.pickup}</p>
+                                    <RadioGroupItem value="pickup" id="pickup" />
+                                </Label>
+                                <Label htmlFor="delivery" className="flex flex-col items-start gap-3 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                    <div className='flex items-center w-full'>
+                                        <Bike className='text-primary mr-4'/>
+                                        <p className='flex-1 font-medium'>{T.delivery}</p>
+                                        <RadioGroupItem value="delivery" id="delivery" />
                                     </div>
-                                )}
-                            </Label>
-                            </RadioGroup>
+                                    {deliveryOption === 'delivery' && (
+                                        <div className="w-full pl-8 space-y-2">
+                                            {isEditingAddress ? (
+                                                <Input 
+                                                    value={deliveryAddress}
+                                                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                                                    placeholder={T.enterAddress}
+                                                    className="w-full"
+                                                    autoFocus
+                                                />
+                                            ) : (
+                                                <div className='flex items-center w-full'>
+                                                    <p className='text-sm text-muted-foreground flex-1'>
+                                                        {T.currentAddress} <span className='font-medium text-foreground'>{deliveryAddress}</span>
+                                                    </p>
+                                                    <Button variant="link" size="sm" onClick={() => setIsEditingAddress(true)}>
+                                                        <Pencil className="mr-2 h-3 w-3" />
+                                                        {T.changeAddress}
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </Label>
+                                </RadioGroup>
+                            </div>
+                            
+                            <div>
+                                <Label className='font-semibold'>{t('paymentMethod')}</Label>
+                                <RadioGroup onValueChange={setPaymentMethod} className='mt-2 space-y-2'>
+                                    <Label htmlFor="cash" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                        <DollarSign className='text-primary' />
+                                        <p className='flex-1 font-medium'>{t('cash')}</p>
+                                        <RadioGroupItem value="cash" id="cash" />
+                                    </Label>
+                                    <Label htmlFor="card" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                        <CreditCard className='text-primary' />
+                                        <p className='flex-1 font-medium'>{t('card')}</p>
+                                        <RadioGroupItem value="card" id="card" />
+                                    </Label>
+                                    <Label htmlFor="transfer" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                        <Landmark className='text-primary' />
+                                        <p className='flex-1 font-medium'>{t('transfer')}</p>
+                                        <RadioGroupItem value="transfer" id="transfer" />
+                                    </Label>
+                                    <Label htmlFor="wallet" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                        <Wallet className='text-primary' />
+                                        <p className='flex-1 font-medium'>{t('wallet')}</p>
+                                        <RadioGroupItem value="wallet" id="wallet" />
+                                    </Label>
+                                </RadioGroup>
+                            </div>
+
+                           </div>
+
                             <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
                             <AlertDialogAction 
                                 onClick={handleConfirmOrder}
-                                disabled={deliveryOption === 'delivery' && !deliveryAddress.trim()}
+                                disabled={!isOrderReady}
                             >
                                 {T.confirmOrder}
                             </AlertDialogAction>
@@ -469,5 +516,7 @@ export default function OrderPage() {
     </div>
   );
 }
+
+    
 
     

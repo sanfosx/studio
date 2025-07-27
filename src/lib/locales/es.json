@@ -49,7 +49,14 @@
   "delete_confirmation_title": "¿Estás completamente seguro?",
   "delete_confirmation_description": "Esta acción no se puede deshacer. Esto eliminará permanentemente el registro del cliente.",
   "myProfile": "Mi Perfil",
-  "login": "Iniciar Sesión"
+  "login": "Iniciar Sesión",
+  "paymentMethod": "Método de Pago",
+  "cash": "Efectivo",
+  "card": "Tarjeta de Débito/Crédito",
+  "transfer": "Transferencia Bancaria",
+  "wallet": "Billetera Virtual"
 }
+
+    
 
     
