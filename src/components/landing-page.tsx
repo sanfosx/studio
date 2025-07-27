@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/language-provider';
 import { Logo } from '@/components/icons';
-import { MapPin, Phone, Mail, User, LogOut } from 'lucide-react';
+import { MapPin, Phone, Mail, User, LogOut, UserCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { LanguageSwitcher, ThemeToggle } from './header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -135,11 +135,8 @@ export default function LandingPage() {
             {user ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                            <Avatar className="h-10 w-10">
-                                <AvatarImage src="https://images.unsplash.com/photo-1511367461989-f85a21fda167?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxwZXJzb24lMjBpY29ufGVufDB8fHx8MTc1MzU4MzA0OXww&ixlib=rb-4.1.0&q=80&w=1080" alt={user.email ?? ''} data-ai-hint="user avatar" />
-                                <AvatarFallback>{user.email?.[0].toUpperCase()}</AvatarFallback>
-                            </Avatar>
+                        <Button variant="ghost" size="icon" className="rounded-full">
+                           <UserCircle className="size-8"/>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
