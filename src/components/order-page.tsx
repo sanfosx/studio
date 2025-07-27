@@ -19,6 +19,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 
 const menuData = {
   pizzas: [
@@ -162,26 +163,23 @@ export default function OrderPage() {
   };
 
 
-  const renderMenuCategory = (title: string, items: MenuItem[]) => (
-    <div id={title.toLowerCase()} className="mb-12">
-      <h2 className="text-3xl font-bold font-headline text-primary mb-8">{title}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {items.map(item => (
-          <Card key={item.id} className="flex flex-col">
-            <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-48 object-cover rounded-t-lg" />
-            <CardHeader>
-              <CardTitle>{item.name}</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1">
-              <p className="text-muted-foreground text-sm">{item.description}</p>
-            </CardContent>
-            <CardFooter className="flex justify-between items-center">
-              <p className="font-bold text-lg text-primary">${item.price.toFixed(2)}</p>
-              <Button onClick={() => handleAddToCart(item)}>{T.addToCart}</Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+  const renderMenuItems = (items: MenuItem[]) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {items.map(item => (
+        <Card key={item.id} className="flex flex-col">
+          <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-48 object-cover rounded-t-lg" />
+          <CardHeader>
+            <CardTitle>{item.name}</CardTitle>
+          </CardHeader>
+          <CardContent className="flex-1">
+            <p className="text-muted-foreground text-sm">{item.description}</p>
+          </CardContent>
+          <CardFooter className="flex justify-between items-center">
+            <p className="font-bold text-lg text-primary">${item.price.toFixed(2)}</p>
+            <Button onClick={() => handleAddToCart(item)}>{T.addToCart}</Button>
+          </CardFooter>
+        </Card>
+      ))}
     </div>
   );
 
@@ -251,10 +249,26 @@ export default function OrderPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
           <main className="lg:col-span-2">
             <h1 className="text-4xl font-extrabold font-headline mb-8">{T.orderOnline}</h1>
-            {renderMenuCategory(T.pizzas, menuData.pizzas)}
-            {renderMenuCategory(T.snacks, menuData.snacks)}
-            {renderMenuCategory(language === 'es' ? 'Bebidas' : 'Drinks', menuData.drinks)}
-            {renderMenuCategory(language === 'es' ? 'Postres' : 'Desserts', menuData.desserts)}
+              <Tabs defaultValue="pizzas" className="w-full">
+                <TabsList className="mb-8">
+                  <TabsTrigger value="pizzas">{T.pizzas}</TabsTrigger>
+                  <TabsTrigger value="snacks">{T.snacks}</TabsTrigger>
+                  <TabsTrigger value="drinks">{language === 'es' ? T.bebidas : T.drinks}</TabsTrigger>
+                  <TabsTrigger value="desserts">{language === 'es' ? T.postres : T.desserts}</TabsTrigger>
+                </TabsList>
+                <TabsContent value="pizzas">
+                  {renderMenuItems(menuData.pizzas)}
+                </TabsContent>
+                <TabsContent value="snacks">
+                  {renderMenuItems(menuData.snacks)}
+                </TabsContent>
+                <TabsContent value="drinks">
+                  {renderMenuItems(menuData.drinks)}
+                </TabsContent>
+                <TabsContent value="desserts">
+                  {renderMenuItems(menuData.desserts)}
+                </TabsContent>
+              </Tabs>
           </main>
 
           <aside className="lg:col-span-1">
