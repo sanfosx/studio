@@ -27,23 +27,23 @@ import { Input } from './ui/input';
 
 const menuData = {
   pizzas: [
-    { id: 'p1', name: 'Pizza Margherita', description: 'Classic pizza with tomato, mozzarella, and basil.', price: 12.50, image: 'https://placehold.co/600x400.png', hint: 'pizza margherita' },
-    { id: 'p2', name: 'Pizza Pepperoni', description: 'The all-time favorite, covered in pepperoni.', price: 14.00, image: 'https://placehold.co/600x400.png', hint: 'pepperoni pizza' },
-    { id: 'p3', name: 'Genius Special', description: 'A secret recipe that will blow your mind.', price: 18.00, image: 'https://placehold.co/600x400.png', hint: 'specialty pizza' },
-    { id: 'p4', name: 'Veggie Supreme', description: 'Loaded with all the best vegetables.', price: 15.50, image: 'https://placehold.co/600x400.png', hint: 'vegetarian pizza' },
+    { id: 'p1', name: 'Pizza Margherita', description: 'Classic pizza with tomato, mozzarella, and basil.', price: 12.50, image: 'https://placehold.co/300x200.png', hint: 'pizza margherita' },
+    { id: 'p2', name: 'Pizza Pepperoni', description: 'The all-time favorite, covered in pepperoni.', price: 14.00, image: 'https://placehold.co/300x200.png', hint: 'pepperoni pizza' },
+    { id: 'p3', name: 'Genius Special', description: 'A secret recipe that will blow your mind.', price: 18.00, image: 'https://placehold.co/300x200.png', hint: 'specialty pizza' },
+    { id: 'p4', name: 'Veggie Supreme', description: 'Loaded with all the best vegetables.', price: 15.50, image: 'https://placehold.co/300x200.png', hint: 'vegetarian pizza' },
   ],
   snacks: [
-    { id: 's1', name: 'Garlic Bread', description: 'Toasted bread with garlic butter and herbs.', price: 6.00, image: 'https://placehold.co/600x400.png', hint: 'garlic bread' },
-    { id: 's2', name: 'Mozzarella Sticks', description: 'Fried cheese sticks served with marinara sauce.', price: 8.00, image: 'https://placehold.co/600x400.png', hint: 'mozzarella sticks' },
-    { id: 's3', name: 'Chicken Wings', description: 'Spicy and tangy, perfect for sharing.', price: 10.00, image: 'https://placehold.co/600x400.png', hint: 'chicken wings' },
+    { id: 's1', name: 'Garlic Bread', description: 'Toasted bread with garlic butter and herbs.', price: 6.00, image: 'https://placehold.co/300x200.png', hint: 'garlic bread' },
+    { id: 's2', name: 'Mozzarella Sticks', description: 'Fried cheese sticks served with marinara sauce.', price: 8.00, image: 'https://placehold.co/300x200.png', hint: 'mozzarella sticks' },
+    { id: 's3', name: 'Chicken Wings', description: 'Spicy and tangy, perfect for sharing.', price: 10.00, image: 'https://placehold.co/300x200.png', hint: 'chicken wings' },
   ],
   drinks: [
-    { id: 'd1', name: 'Coca-Cola', description: 'Classic soft drink.', price: 2.50, image: 'https://placehold.co/600x400.png', hint: 'soda can' },
-    { id: 'd2', name: 'Fresh Lemonade', description: 'Homemade with fresh lemons.', price: 3.50, image: 'https://placehold.co/600x400.png', hint: 'lemonade glass' },
+    { id: 'd1', name: 'Coca-Cola', description: 'Classic soft drink.', price: 2.50, image: 'https://placehold.co/300x200.png', hint: 'soda can' },
+    { id: 'd2', name: 'Fresh Lemonade', description: 'Homemade with fresh lemons.', price: 3.50, image: 'https://placehold.co/300x200.png', hint: 'lemonade glass' },
   ],
   desserts: [
-    { id: 'ds1', name: 'Tiramisu', description: 'A coffee-flavored Italian dessert.', price: 7.50, image: 'https://placehold.co/600x400.png', hint: 'tiramisu slice' },
-    { id: 'ds2', name: 'Chocolate Lava Cake', description: 'Warm chocolate cake with a molten center.', price: 8.50, image: 'https://placehold.co/600x400.png', hint: 'lava cake' },
+    { id: 'ds1', name: 'Tiramisu', description: 'A coffee-flavored Italian dessert.', price: 7.50, image: 'https://placehold.co/300x200.png', hint: 'tiramisu slice' },
+    { id: 'ds2', name: 'Chocolate Lava Cake', description: 'Warm chocolate cake with a molten center.', price: 8.50, image: 'https://placehold.co/300x200.png', hint: 'lava cake' },
   ]
 };
 
@@ -205,6 +205,7 @@ export default function OrderPage() {
       }
       return [...prevCart, { ...item, quantity: 1 }];
     });
+    setIsCartOpen(true);
   };
 
   const handleUpdateQuantity = (id: string, newQuantity: number) => {
@@ -249,7 +250,7 @@ export default function OrderPage() {
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {items.map(item => (
         <Card key={item.id} className="flex flex-col">
-          <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-40 object-cover rounded-t-lg" />
+          <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={300} height={200} className="w-full h-32 object-cover rounded-t-lg" />
           <CardHeader className="p-4">
             <CardTitle className="text-lg">{item.name}</CardTitle>
           </CardHeader>
@@ -533,7 +534,3 @@ export default function OrderPage() {
     </div>
   );
 }
-
-    
-
-    
