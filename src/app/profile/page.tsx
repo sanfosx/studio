@@ -10,7 +10,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/language-provider';
@@ -19,7 +18,8 @@ import { Logo } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { LanguageSwitcher, ThemeToggle } from '@/components/header';
 import Link from 'next/link';
-import { Home } from 'lucide-react';
+import { Home, Pencil, X, Check } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const profileSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -29,59 +29,86 @@ const profileSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
+type EditableField = 'name' | 'phone';
+
 function ProfilePageContent() {
   const { user, auth } = useAuth();
   const { toast } = useToast();
   const { t } = useLanguage();
   const [clientDocId, setClientDocId] = React.useState<string | null>(null);
+  const [clientData, setClientData] = React.useState<ProfileFormValues | null>(null);
+  const [editingField, setEditingField] = React.useState<EditableField | null>(null);
+  const [fieldValue, setFieldValue] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
 
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      name: '',
-      phone: '',
-      email: '',
-    },
-  });
 
   React.useEffect(() => {
     const fetchClientData = async () => {
+      setIsLoading(true);
       if (user) {
         const q = query(collection(db, "clients"), where("uid", "==", user.uid));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
           const clientDoc = querySnapshot.docs[0];
           setClientDocId(clientDoc.id);
-          form.reset(clientDoc.data() as ProfileFormValues);
+          setClientData(clientDoc.data() as ProfileFormValues);
         } else {
-            // This might happen if user was created in auth but not in firestore
-            // Or if user is an admin. Admins should not see this page.
-             router.push('/');
+            router.push('/');
         }
       }
+      setIsLoading(false);
     };
     fetchClientData();
-  }, [user, form, router]);
+  }, [user, router]);
 
-  const onSubmit: SubmitHandler<ProfileFormValues> = async (data) => {
-    if (!clientDocId) return;
+  const handleEdit = (field: EditableField) => {
+    if (!clientData) return;
+    setEditingField(field);
+    setFieldValue(clientData[field]);
+  };
+
+  const handleCancel = () => {
+    setEditingField(null);
+    setFieldValue('');
+  };
+
+  const handleSave = async () => {
+    if (!clientDocId || !editingField || !clientData) return;
+
+    if (fieldValue.trim() === '') {
+        toast({
+            variant: 'destructive',
+            title: "Error",
+            description: "El campo no puede estar vacío.",
+        });
+        return;
+    }
+    
+    if (fieldValue === clientData[editingField]) {
+        setEditingField(null);
+        return;
+    }
+
     try {
       const clientRef = doc(db, 'clients', clientDocId);
-      await updateDoc(clientRef, { name: data.name, phone: data.phone });
+      await updateDoc(clientRef, { [editingField]: fieldValue });
+      setClientData(prev => prev ? { ...prev, [editingField]: fieldValue } : null);
       toast({
         title: "Éxito",
         description: "Tu perfil ha sido actualizado.",
       });
+      setEditingField(null);
     } catch (error) {
-      console.error("Error updating profile: ", error);
+      console.error(`Error updating ${editingField}: `, error);
       toast({
         variant: 'destructive',
         title: "Error",
-        description: "No se pudo actualizar tu perfil.",
+        description: `No se pudo actualizar tu ${editingField}.`,
       });
     }
   };
+
 
   const handleSendResetPassword = async () => {
     if (user?.email && auth) {
@@ -101,6 +128,51 @@ function ProfilePageContent() {
       }
     }
   };
+
+  const renderField = (label: string, field: EditableField) => {
+    const isEditing = editingField === field;
+    
+    return (
+        <div className='space-y-2'>
+            <label className="text-sm font-medium">{label}</label>
+            {isLoading ? <Skeleton className="h-10 w-full" /> : 
+             !clientData ? <p>Error loading data</p> :
+             (
+                <div className="flex items-center gap-2">
+                {isEditing ? (
+                    <>
+                    <Input 
+                        value={fieldValue}
+                        onChange={(e) => setFieldValue(e.target.value)}
+                        autoFocus
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleSave();
+                            if (e.key === 'Escape') handleCancel();
+                        }}
+                    />
+                    <Button variant="ghost" size="icon" onClick={handleSave}>
+                        <Check className="h-4 w-4 text-green-500" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={handleCancel}>
+                        <X className="h-4 w-4 text-red-500" />
+                    </Button>
+                    </>
+                ) : (
+                    <>
+                    <p className="flex-1 h-10 flex items-center px-3 rounded-md border border-input bg-background/50">
+                        {clientData[field]}
+                    </p>
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(field)}>
+                        <Pencil className="h-4 w-4" />
+                    </Button>
+                    </>
+                )}
+                </div>
+            )}
+        </div>
+    )
+  }
+
 
   return (
     <div className='flex flex-col min-h-screen bg-secondary'>
@@ -128,64 +200,25 @@ function ProfilePageContent() {
                 <CardTitle>{t('myProfile')}</CardTitle>
                 <CardDescription>Actualiza tu información personal aquí.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Nombre</FormLabel>
-                            <FormControl>
-                            <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
+                <CardContent className='space-y-6'>
+                    {renderField('Nombre', 'name')}
+                    {renderField('Teléfono', 'phone')}
+                    
+                    <div className='space-y-2'>
+                        <label className="text-sm font-medium">Email</label>
+                        {isLoading ? <Skeleton className="h-10 w-full" /> : (
+                            <Input value={clientData?.email || ''} readOnly disabled />
                         )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Teléfono</FormLabel>
-                            <FormControl>
-                            <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                            <Input {...field} readOnly disabled />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <div className='space-y-4'>
-                        <Button type="submit" className="w-full">
-                            {t('save_changes')}
-                        </Button>
-                         <Button type="button" variant="outline" onClick={handleSendResetPassword} className="w-full">
-                            Cambiar Contraseña
-                        </Button>
                     </div>
+                   
+                    <Button type="button" variant="outline" onClick={handleSendResetPassword} className="w-full !mt-8">
+                        Cambiar Contraseña
+                    </Button>
 
-                    </form>
-                </Form>
                 </CardContent>
             </Card>
         </div>
     </div>
-
   );
 }
 
