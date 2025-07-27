@@ -190,7 +190,7 @@ export default function LandingPage() {
             <p className="mt-4 max-w-2xl text-lg md:text-xl drop-shadow-md">{T.heroSubtitle}</p>
             <div className="mt-8 flex gap-4">
               <Button size="lg" asChild><Link href="#contact">{T.reserve}</Link></Button>
-              <Button size="lg" variant="secondary" asChild><Link href="#menu">{T.order}</Link></Button>
+              <Button size="lg" variant="secondary" asChild><Link href="/order">{T.order}</Link></Button>
             </div>
           </div>
         </section>
