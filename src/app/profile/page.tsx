@@ -5,11 +5,9 @@ import * as React from 'react';
 import { useAuth, ProtectedRoute } from '@/contexts/auth-provider';
 import { db } from '@/lib/firebase';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/language-provider';
@@ -18,8 +16,11 @@ import { Logo } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { LanguageSwitcher, ThemeToggle } from '@/components/header';
 import Link from 'next/link';
-import { Home, Pencil, X, Check } from 'lucide-react';
+import { Home, Pencil, X, Check, ShoppingCart, CalendarDays, Receipt } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+
 
 const profileSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -30,6 +31,20 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 type EditableField = 'name' | 'phone';
+
+
+// Mock data for orders and reservations
+const mockOrders = [
+    { id: 'ORD-001', date: '2024-07-20', total: 35.50, status: 'Entregado', items: ['Pizza Pepperoni', 'Coca-Cola'] },
+    { id: 'ORD-002', date: '2024-07-22', total: 42.00, status: 'En camino', items: ['Genius Special', 'Mozzarella Sticks'] },
+    { id: 'ORD-003', date: '2024-07-23', total: 18.50, status: 'Cancelado', items: ['Pizza Margherita'] },
+];
+
+const mockReservations = [
+    { id: 'RES-001', date: '2024-08-01', time: '20:00', guests: 4, status: 'Confirmada' },
+    { id: 'RES-002', date: '2024-07-15', time: '19:30', guests: 2, status: 'Completada' },
+];
+
 
 function ProfilePageContent() {
   const { user, auth } = useAuth();
@@ -194,29 +209,107 @@ function ProfilePageContent() {
             </div>
             </div>
       </header>
-        <div className="flex flex-1 items-center justify-center py-12">
-            <Card className="w-full max-w-lg">
-                <CardHeader>
-                <CardTitle>{t('myProfile')}</CardTitle>
-                <CardDescription>Actualiza tu información personal aquí.</CardDescription>
-                </CardHeader>
-                <CardContent className='space-y-6'>
-                    {renderField('Nombre', 'name')}
-                    {renderField('Teléfono', 'phone')}
-                    
-                    <div className='space-y-2'>
-                        <label className="text-sm font-medium">Email</label>
-                        {isLoading ? <Skeleton className="h-10 w-full" /> : (
-                            <Input value={clientData?.email || ''} readOnly disabled />
-                        )}
-                    </div>
+        <div className="flex flex-1 items-start justify-center py-12 px-4">
+            <Tabs defaultValue="profile" className="w-full max-w-4xl">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="profile">{t('myProfile')}</TabsTrigger>
+                    <TabsTrigger value="orders">Mis Pedidos</TabsTrigger>
+                    <TabsTrigger value="reservations">Mis Reservas</TabsTrigger>
+                </TabsList>
+                <TabsContent value="profile">
+                    <Card className="w-full">
+                        <CardHeader>
+                        <CardTitle>{t('myProfile')}</CardTitle>
+                        <CardDescription>Actualiza tu información personal aquí.</CardDescription>
+                        </CardHeader>
+                        <CardContent className='space-y-6'>
+                            {renderField('Nombre', 'name')}
+                            {renderField('Teléfono', 'phone')}
+                            
+                            <div className='space-y-2'>
+                                <label className="text-sm font-medium">Email</label>
+                                {isLoading ? <Skeleton className="h-10 w-full" /> : (
+                                    <Input value={clientData?.email || ''} readOnly disabled />
+                                )}
+                            </div>
                    
-                    <Button type="button" variant="outline" onClick={handleSendResetPassword} className="w-full !mt-8">
-                        Cambiar Contraseña
-                    </Button>
+                            <Button type="button" variant="outline" onClick={handleSendResetPassword} className="w-full !mt-8">
+                                Cambiar Contraseña
+                            </Button>
 
-                </CardContent>
-            </Card>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="orders">
+                     <Card>
+                        <CardHeader>
+                            <CardTitle>Mis Pedidos</CardTitle>
+                            <CardDescription>Aquí puedes ver tu historial de pedidos.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {mockOrders.length > 0 ? (
+                                mockOrders.map(order => (
+                                    <Card key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 gap-4">
+                                        <div className="flex-1 space-y-1">
+                                            <p className="font-semibold text-primary">Pedido #{order.id}</p>
+                                            <p className="text-sm text-muted-foreground">Fecha: {order.date}</p>
+                                            <p className="text-sm">{order.items.join(', ')}</p>
+                                        </div>
+                                        <div className="flex flex-col items-start md:items-end gap-2">
+                                            <p className="font-bold text-lg">${order.total.toFixed(2)}</p>
+                                            <Badge variant={order.status === 'Entregado' ? 'default' : order.status === 'Cancelado' ? 'destructive' : 'secondary'}
+                                                className={order.status === 'Entregado' ? 'bg-green-600 text-white' : ''}>
+                                                {order.status}
+                                            </Badge>
+                                             <Button variant="outline" size="sm" className="mt-2">
+                                                <Receipt className="mr-2 h-4 w-4" />
+                                                Ver Factura
+                                            </Button>
+                                        </div>
+                                    </Card>
+                                ))
+                            ) : (
+                                <div className="text-center py-12 text-muted-foreground">
+                                    <ShoppingCart className="mx-auto h-12 w-12" />
+                                    <p className="mt-4">No tienes pedidos todavía.</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+                <TabsContent value="reservations">
+                     <Card>
+                        <CardHeader>
+                            <CardTitle>Mis Reservas</CardTitle>
+                            <CardDescription>Aquí puedes ver tu historial de reservas.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                           {mockReservations.length > 0 ? (
+                                mockReservations.map(res => (
+                                    <Card key={res.id} className="flex justify-between items-center p-4">
+                                        <div className="flex-1 space-y-1">
+                                            <p className="font-semibold text-primary">Reserva #{res.id}</p>
+                                            <p className="text-sm text-muted-foreground">Fecha: {res.date} a las {res.time}</p>
+                                            <p className="text-sm">Mesa para {res.guests} personas</p>
+                                        </div>
+                                        <div className="text-right">
+                                             <Badge variant={res.status === 'Confirmada' ? 'default' : res.status === 'Completada' ? 'secondary' : 'destructive'}
+                                                className={res.status === 'Confirmada' ? 'bg-blue-600 text-white' : ''}>
+                                                {res.status}
+                                            </Badge>
+                                        </div>
+                                    </Card>
+                                ))
+                           ) : (
+                                <div className="text-center py-12 text-muted-foreground">
+                                    <CalendarDays className="mx-auto h-12 w-12" />
+                                    <p className="mt-4">No tienes reservas todavía.</p>
+                                </div>
+                           )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     </div>
   );
@@ -230,3 +323,5 @@ export default function ProfilePage() {
         </ProtectedRoute>
     )
 }
+
+    
