@@ -422,12 +422,12 @@ export default function OrderPage() {
                                 }
                             }}>{T.placeOrder}</Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className="grid grid-rows-[auto_1fr_auto] max-h-[90vh]">
                             <AlertDialogHeader>
                             <AlertDialogTitle>{T.confirmOrder}</AlertDialogTitle>
                             </AlertDialogHeader>
                            
-                           <div className="space-y-6">
+                           <div className="space-y-6 overflow-y-auto pr-2">
                             <div>
                                 <Label className='font-semibold'>{T.deliveryMethod}</Label>
                                 <RadioGroup defaultValue={deliveryOption} onValueChange={setDeliveryOption} className='mt-2 space-y-2'>
@@ -495,26 +495,26 @@ export default function OrderPage() {
                                 </RadioGroup>
                             </div>
 
-                           </div>
-
-                            <Separator className="my-4" />
-                            <div className="space-y-2">
-                                <div className="flex justify-between">
-                                <span>{T.subtotal}</span>
-                                <span>${subtotal.toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between text-sm text-muted-foreground">
-                                <span>{language === 'es' ? T.impuestos : T.tax}</span>
-                                <span>${tax.toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between font-bold text-lg">
-                                <span>{T.total}</span>
-                                <span>${total.toFixed(2)}</span>
+                            <div>
+                                <Separator className="my-2" />
+                                <div className="space-y-2">
+                                    <div className="flex justify-between">
+                                    <span>{T.subtotal}</span>
+                                    <span>${subtotal.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between text-sm text-muted-foreground">
+                                    <span>{language === 'es' ? T.impuestos : T.tax}</span>
+                                    <span>${tax.toFixed(2)}</span>
+                                    </div>
+                                    <div className="flex justify-between font-bold text-lg">
+                                    <span>{T.total}</span>
+                                    <span>${total.toFixed(2)}</span>
+                                    </div>
                                 </div>
                             </div>
-                           
+                           </div>
 
-                            <AlertDialogFooter>
+                            <AlertDialogFooter className="pt-4 border-t">
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
                             <AlertDialogAction 
                                 onClick={handleConfirmOrder}
@@ -533,3 +533,5 @@ export default function OrderPage() {
     </div>
   );
 }
+
+    
