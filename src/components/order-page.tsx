@@ -135,6 +135,9 @@ export default function OrderPage() {
       cash: 'Cash',
       transfer: 'Bank Transfer',
       saveAddress: 'Save Address',
+      cbu: 'CBU',
+      alias: 'Alias',
+      attach_proof: 'Attach proof of payment',
     },
     es: {
       orderOnline: 'Pedir Online',
@@ -168,6 +171,9 @@ export default function OrderPage() {
       cash: 'Efectivo',
       transfer: 'Transferencia Bancaria',
       saveAddress: 'Guardar Dirección',
+      cbu: 'CBU',
+      alias: 'Alias',
+      attach_proof: 'Adjuntar comprobante',
     }
   };
 
@@ -494,16 +500,31 @@ export default function OrderPage() {
                             
                             <div>
                                 <Label className='font-semibold'>{t('paymentMethod')}</Label>
-                                <RadioGroup onValueChange={setPaymentMethod} className='mt-2 space-y-2'>
+                                <RadioGroup onValueChange={setPaymentMethod} value={paymentMethod || ''} className='mt-2 space-y-2'>
                                     <Label htmlFor="cash" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
                                         <DollarSign className='text-primary' />
                                         <p className='flex-1 font-medium'>{t('cash')}</p>
                                         <RadioGroupItem value="cash" id="cash" />
                                     </Label>
-                                    <Label htmlFor="transfer" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                        <Landmark className='text-primary' />
-                                        <p className='flex-1 font-medium'>{t('transfer')}</p>
-                                        <RadioGroupItem value="transfer" id="transfer" />
+                                    <Label htmlFor="transfer" className="flex flex-col items-start gap-3 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                        <div className='flex items-center w-full'>
+                                            <Landmark className='text-primary mr-4' />
+                                            <p className='flex-1 font-medium'>{t('transfer')}</p>
+                                            <RadioGroupItem value="transfer" id="transfer" />
+                                        </div>
+                                        {paymentMethod === 'transfer' && (
+                                            <div className="w-full pl-8 space-y-4 pt-2">
+                                                <Separator />
+                                                <div>
+                                                    <p className="text-sm font-medium">{t('cbu')}: <span className="font-mono text-muted-foreground">0000003100055555555555</span></p>
+                                                    <p className="text-sm font-medium">{t('alias')}: <span className="font-mono text-muted-foreground">pizzeria.los.genios</span></p>
+                                                </div>
+                                                <div className="grid w-full max-w-sm items-center gap-1.5">
+                                                    <Label htmlFor="proof-of-payment">{t('attach_proof')}</Label>
+                                                    <Input id="proof-of-payment" type="file" />
+                                                </div>
+                                            </div>
+                                        )}
                                     </Label>
                                 </RadioGroup>
                             </div>
@@ -546,3 +567,5 @@ export default function OrderPage() {
     </div>
   );
 }
+
+    

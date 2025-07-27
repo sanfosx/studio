@@ -52,5 +52,10 @@
   "login": "Log In",
   "paymentMethod": "Payment Method",
   "cash": "Cash",
-  "transfer": "Bank Transfer"
+  "transfer": "Bank Transfer",
+  "cbu": "CBU",
+  "alias": "Alias",
+  "attach_proof": "Attach proof of payment"
 }
+
+    

@@ -52,5 +52,10 @@
   "login": "Iniciar Sesión",
   "paymentMethod": "Método de Pago",
   "cash": "Efectivo",
-  "transfer": "Transferencia Bancaria"
+  "transfer": "Transferencia Bancaria",
+  "cbu": "CBU",
+  "alias": "Alias",
+  "attach_proof": "Adjuntar comprobante"
 }
+
+    
