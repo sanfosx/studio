@@ -11,7 +11,7 @@ import { LanguageSwitcher, ThemeToggle } from './header';
 import { useAuth } from '@/contexts/auth-provider';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
-import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X } from 'lucide-react';
+import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X, Pencil } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from './ui/sheet';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { Input } from './ui/input';
 
 const menuData = {
   pizzas: [
@@ -72,6 +73,8 @@ export default function OrderPage() {
   const [deliveryOption, setDeliveryOption] = React.useState('pickup');
   const [isCartOpen, setIsCartOpen] = React.useState(false);
   const [clientData, setClientData] = React.useState<ClientData | null>(null);
+  const [deliveryAddress, setDeliveryAddress] = React.useState('');
+  const [isEditingAddress, setIsEditingAddress] = React.useState(false);
 
   React.useEffect(() => {
     const fetchClientData = async () => {
@@ -79,9 +82,17 @@ export default function OrderPage() {
             const q = query(collection(db, "clients"), where("uid", "==", user.uid));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
-                const clientDoc = querySnapshot.docs[0];
-                setClientData(clientDoc.data() as ClientData);
+                const clientDoc = querySnapshot.docs[0].data() as ClientData;
+                setClientData(clientDoc);
+                setDeliveryAddress(clientDoc.address || '');
+                if (!clientDoc.address) {
+                    setIsEditingAddress(true);
+                }
+            } else {
+                setIsEditingAddress(true);
             }
+        } else {
+            setIsEditingAddress(true);
         }
     };
     fetchClientData();
@@ -112,7 +123,10 @@ export default function OrderPage() {
       delivery: 'Home Delivery',
       deliveryAddressPrompt: 'Your order will be sent to:',
       noAddressRegistered: 'No address registered. Please add one in your profile.',
-      confirmOrder: 'Confirm Order'
+      confirmOrder: 'Confirm Order',
+      currentAddress: 'Current address:',
+      changeAddress: 'Change',
+      enterAddress: 'Enter your delivery address'
     },
     es: {
       orderOnline: 'Pedir Online',
@@ -137,11 +151,34 @@ export default function OrderPage() {
       delivery: 'Envío a domicilio',
       deliveryAddressPrompt: 'Tu pedido se enviará a:',
       noAddressRegistered: 'No hay dirección registrada. Por favor, añade una en tu perfil.',
-      confirmOrder: 'Confirmar Pedido'
+      confirmOrder: 'Confirmar Pedido',
+      currentAddress: 'Dirección actual:',
+      changeAddress: 'Cambiar',
+      enterAddress: 'Ingresa tu dirección de envío'
     }
   };
 
   const T = language === 'en' ? translations.en : translations.es;
+  
+  const handleOpenPlaceOrder = () => {
+    if (!user) {
+        toast({
+            variant: 'destructive',
+            title: 'Inicio de sesión requerido',
+            description: 'Por favor, inicia sesión para realizar un pedido.',
+        });
+        router.push('/login');
+        return false;
+    }
+    if (clientData?.address) {
+        setDeliveryAddress(clientData.address);
+        setIsEditingAddress(false);
+    } else {
+        setDeliveryAddress('');
+        setIsEditingAddress(true);
+    }
+    return true;
+  };
 
   const handleAddToCart = (item: MenuItem) => {
     setCart(prevCart => {
@@ -175,9 +212,10 @@ export default function OrderPage() {
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const handleConfirmOrder = () => {
+    let orderDescription = `${deliveryOption === 'pickup' ? T.pickup : `${T.delivery} a ${deliveryAddress}`}`;
     toast({
         title: T.orderPlaced,
-        description: `${T.orderPlacedDesc} (${deliveryOption === 'pickup' ? T.pickup : T.delivery})`,
+        description: `${T.orderPlacedDesc} (${orderDescription})`,
     });
     setCart([]);
     setIsCartOpen(false);
@@ -360,7 +398,11 @@ export default function OrderPage() {
                         </div>
                         <AlertDialog>
                         <AlertDialogTrigger asChild>
-                            <Button size="lg" className="w-full mt-4">{T.placeOrder}</Button>
+                            <Button size="lg" className="w-full mt-4" onClick={(e) => {
+                                if (!handleOpenPlaceOrder()) {
+                                    e.preventDefault();
+                                }
+                            }}>{T.placeOrder}</Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                             <AlertDialogHeader>
@@ -377,25 +419,43 @@ export default function OrderPage() {
                                 </div>
                                 <RadioGroupItem value="pickup" id="pickup" />
                             </Label>
-                                <Label htmlFor="delivery" className="flex items-center gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                <Bike className='text-primary'/>
-                                <div className='flex-1'>
+                             <Label htmlFor="delivery" className="flex flex-col items-start gap-4 p-4 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
+                                <div className='flex items-center w-full'>
+                                     <Bike className='text-primary mr-4'/>
                                     <p className='font-semibold'>{T.delivery}</p>
-                                    {deliveryOption === 'delivery' && (
-                                        <p className='text-xs text-muted-foreground mt-1'>
-                                            {T.deliveryAddressPrompt}
-                                            <span className='font-medium text-foreground ml-1'>
-                                                {clientData?.address || T.noAddressRegistered}
-                                            </span>
-                                        </p>
-                                    )}
+                                    <RadioGroupItem value="delivery" id="delivery" className='ml-auto'/>
                                 </div>
-                                <RadioGroupItem value="delivery" id="delivery" disabled={!clientData?.address} />
+                                 {deliveryOption === 'delivery' && (
+                                    <div className="w-full pl-8 space-y-2 pt-2">
+                                        {isEditingAddress ? (
+                                             <Input 
+                                                value={deliveryAddress}
+                                                onChange={(e) => setDeliveryAddress(e.target.value)}
+                                                placeholder={T.enterAddress}
+                                                className="w-full"
+                                                autoFocus
+                                            />
+                                        ) : (
+                                            <div className='flex items-center w-full'>
+                                                <p className='text-sm text-muted-foreground flex-1'>
+                                                    {T.currentAddress} <span className='font-medium text-foreground'>{deliveryAddress}</span>
+                                                </p>
+                                                <Button variant="link" size="sm" onClick={() => setIsEditingAddress(true)}>
+                                                    <Pencil className="mr-2 h-3 w-3" />
+                                                    {T.changeAddress}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </Label>
                             </RadioGroup>
                             <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleConfirmOrder}>
+                            <AlertDialogAction 
+                                onClick={handleConfirmOrder}
+                                disabled={deliveryOption === 'delivery' && !deliveryAddress.trim()}
+                            >
                                 {T.confirmOrder}
                             </AlertDialogAction>
                             </AlertDialogFooter>
@@ -409,3 +469,5 @@ export default function OrderPage() {
     </div>
   );
 }
+
+    
