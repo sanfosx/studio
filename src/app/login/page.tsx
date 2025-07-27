@@ -60,6 +60,7 @@ export default function LoginPage() {
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { name: '', phone: '', address: '', email: '', password: '' },
+    mode: 'onChange',
   });
 
   const onLoginSubmit: SubmitHandler<LoginFormValues> = async (data) => {
@@ -284,7 +285,7 @@ export default function LoginPage() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="w-full" disabled={isLoading || !firebaseConfigured}>
+                        <Button type="submit" className="w-full" disabled={isLoading || !firebaseConfigured || !registerForm.formState.isValid}>
                             {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
                         </Button>
                     </form>
