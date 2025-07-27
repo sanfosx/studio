@@ -212,11 +212,13 @@ function ProfilePageContent() {
       </header>
         <div className="flex flex-1 items-start justify-center py-12 px-4">
             <Tabs defaultValue="profile" className="w-full max-w-4xl">
-                <TabsList className="bg-transparent border-2 border-primary/20 p-1 rounded-full mb-8">
-                    <TabsTrigger value="profile" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{t('myProfile')}</TabsTrigger>
-                    <TabsTrigger value="orders" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Mis Pedidos</TabsTrigger>
-                    <TabsTrigger value="reservations" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Mis Reservas</TabsTrigger>
-                </TabsList>
+                 <div className="flex justify-center">
+                    <TabsList className="bg-transparent border-2 border-primary/20 p-1 rounded-full mb-8">
+                        <TabsTrigger value="profile" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{t('myProfile')}</TabsTrigger>
+                        <TabsTrigger value="orders" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Mis Pedidos</TabsTrigger>
+                        <TabsTrigger value="reservations" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Mis Reservas</TabsTrigger>
+                    </TabsList>
+                </div>
                 <TabsContent value="profile">
                     <Card className="w-full">
                         <CardHeader>
