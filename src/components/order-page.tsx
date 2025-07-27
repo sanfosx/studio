@@ -226,7 +226,7 @@ export default function OrderPage() {
 
   const handleConfirmOrder = () => {
     let orderDescription = `${deliveryOption === 'pickup' ? T.pickup : `${T.delivery} a ${deliveryAddress}`}`;
-    orderDescription += `, ${t('payment_method')}: ${paymentMethod}`;
+    orderDescription += `, ${t('paymentMethod')}: ${paymentMethod}`;
     toast({
         title: T.orderPlaced,
         description: `${T.orderPlacedDesc}`,
@@ -336,10 +336,10 @@ export default function OrderPage() {
               <div className="text-center">
                 <Tabs defaultValue="pizzas" className="w-full">
                   <TabsList className="bg-transparent border-2 border-primary/20 p-1 rounded-full mb-8">
-                    <TabsTrigger value="pizzas" className="rounded-full">{T.pizzas}</TabsTrigger>
-                    <TabsTrigger value="snacks" className="rounded-full">{T.snacks}</TabsTrigger>
-                    <TabsTrigger value="drinks" className="rounded-full">{language === 'es' ? T.bebidas : T.drinks}</TabsTrigger>
-                    <TabsTrigger value="desserts" className="rounded-full">{language === 'es' ? T.postres : T.desserts}</TabsTrigger>
+                    <TabsTrigger value="pizzas" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{T.pizzas}</TabsTrigger>
+                    <TabsTrigger value="snacks" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{T.snacks}</TabsTrigger>
+                    <TabsTrigger value="drinks" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{language === 'es' ? T.bebidas : T.drinks}</TabsTrigger>
+                    <TabsTrigger value="desserts" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{language === 'es' ? T.postres : T.desserts}</TabsTrigger>
                   </TabsList>
                   <TabsContent value="pizzas">
                     {renderMenuItems(menuData.pizzas)}
@@ -497,6 +497,23 @@ export default function OrderPage() {
 
                            </div>
 
+                            <Separator className="my-4" />
+                            <div className="space-y-2">
+                                <div className="flex justify-between">
+                                <span>{T.subtotal}</span>
+                                <span>${subtotal.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between text-sm text-muted-foreground">
+                                <span>{language === 'es' ? T.impuestos : T.tax}</span>
+                                <span>${tax.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between font-bold text-lg">
+                                <span>{T.total}</span>
+                                <span>${total.toFixed(2)}</span>
+                                </div>
+                            </div>
+                           
+
                             <AlertDialogFooter>
                             <AlertDialogCancel>Cancelar</AlertDialogCancel>
                             <AlertDialogAction 
@@ -516,7 +533,3 @@ export default function OrderPage() {
     </div>
   );
 }
-
-    
-
-    
