@@ -52,11 +52,5 @@
   "login": "Iniciar Sesión",
   "paymentMethod": "Método de Pago",
   "cash": "Efectivo",
-  "card": "Tarjeta de Débito/Crédito",
-  "transfer": "Transferencia Bancaria",
-  "wallet": "Billetera Virtual"
+  "transfer": "Transferencia Bancaria"
 }
-
-    
-
-    

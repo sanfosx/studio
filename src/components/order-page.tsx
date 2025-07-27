@@ -133,9 +133,7 @@ export default function OrderPage() {
       paymentMethod: 'Payment Method',
       paymentMethodDesc: 'Please select a payment method.',
       cash: 'Cash',
-      card: 'Debit/Credit Card',
       transfer: 'Bank Transfer',
-      wallet: 'Virtual Wallet',
       saveAddress: 'Save Address',
     },
     es: {
@@ -168,9 +166,7 @@ export default function OrderPage() {
       paymentMethod: 'Método de Pago',
       paymentMethodDesc: 'Por favor, selecciona un método de pago.',
       cash: 'Efectivo',
-      card: 'Tarjeta de Débito/Crédito',
       transfer: 'Transferencia Bancaria',
-      wallet: 'Billetera Virtual',
       saveAddress: 'Guardar Dirección',
     }
   };
@@ -384,14 +380,14 @@ export default function OrderPage() {
                     {T.yourOrder}
                 </SheetTitle>
             </SheetHeader>
-             <div className="flex-1 overflow-y-auto">
+             <div className="flex-1 overflow-y-auto pr-4">
                 {cart.length === 0 ? (
                 <div className="flex flex-col h-full items-center justify-center text-center">
                     <ShoppingCart className="h-16 w-16 text-muted-foreground" />
                     <p className="text-muted-foreground text-center mt-4">{T.emptyCart}</p>
                 </div>
                 ) : (
-                <div className="space-y-4 pr-4">
+                <div className="space-y-4">
                     {cart.map(item => (
                     <div key={item.id} className="flex items-center justify-between">
                         <div className='flex-1'>
@@ -504,20 +500,10 @@ export default function OrderPage() {
                                         <p className='flex-1 font-medium'>{t('cash')}</p>
                                         <RadioGroupItem value="cash" id="cash" />
                                     </Label>
-                                    <Label htmlFor="card" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                        <CreditCard className='text-primary' />
-                                        <p className='flex-1 font-medium'>{t('card')}</p>
-                                        <RadioGroupItem value="card" id="card" />
-                                    </Label>
                                     <Label htmlFor="transfer" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
                                         <Landmark className='text-primary' />
                                         <p className='flex-1 font-medium'>{t('transfer')}</p>
                                         <RadioGroupItem value="transfer" id="transfer" />
-                                    </Label>
-                                    <Label htmlFor="wallet" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                        <Wallet className='text-primary' />
-                                        <p className='flex-1 font-medium'>{t('wallet')}</p>
-                                        <RadioGroupItem value="wallet" id="wallet" />
                                     </Label>
                                 </RadioGroup>
                             </div>
@@ -560,5 +546,3 @@ export default function OrderPage() {
     </div>
   );
 }
-
-    

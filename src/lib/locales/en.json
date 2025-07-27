@@ -52,11 +52,5 @@
   "login": "Log In",
   "paymentMethod": "Payment Method",
   "cash": "Cash",
-  "card": "Debit/Credit Card",
-  "transfer": "Bank Transfer",
-  "wallet": "Virtual Wallet"
+  "transfer": "Bank Transfer"
 }
-
-    
-
-    
