@@ -18,6 +18,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
+import { Badge } from './ui/badge';
 
 const menuData = {
   pizzas: [
@@ -145,6 +146,7 @@ export default function OrderPage() {
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const tax = subtotal * 0.05;
   const total = subtotal + tax;
+  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
 
   const handleConfirmOrder = () => {
     toast({
@@ -198,6 +200,16 @@ export default function OrderPage() {
                     Home
                 </Link>
             </Button>
+            <div className="relative">
+                <Button variant="ghost" size="icon" aria-label="Shopping Cart">
+                    <ShoppingCart />
+                    {totalItems > 0 && (
+                        <Badge variant="destructive" className="absolute -right-2 -top-2 h-6 w-6 rounded-full flex items-center justify-center">
+                            {totalItems}
+                        </Badge>
+                    )}
+                </Button>
+            </div>
             {user ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

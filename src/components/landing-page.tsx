@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/language-provider';
 import { Logo } from '@/components/icons';
-import { MapPin, Phone, Mail, User, LogOut, UserCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, User, LogOut, UserCircle, ShoppingCart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { LanguageSwitcher, ThemeToggle } from './header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -132,6 +132,12 @@ export default function LandingPage() {
             <Link href="#contact" className="text-sm font-medium hover:text-primary transition-colors">{T.contact}</Link>
           </nav>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" asChild>
+                <Link href="/order">
+                    <ShoppingCart />
+                    <span className="sr-only">Shopping Cart</span>
+                </Link>
+            </Button>
             {user ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
