@@ -199,10 +199,10 @@ function ProfilePageContent() {
                 <span className="text-xl font-bold font-headline text-primary">Pizzeria Los Genios</span>
             </Link>
             <div className="flex items-center gap-2">
-                <Button variant="ghost" asChild>
+                <Button variant="ghost" size="icon" asChild>
                     <Link href="/">
-                        <Home className='mr-2'/>
-                        Home
+                        <Home />
+                        <span className="sr-only">Home</span>
                     </Link>
                 </Button>
                 <LanguageSwitcher />
