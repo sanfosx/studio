@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -13,6 +14,7 @@ import {
   LogOut,
   LayoutDashboard,
   Home,
+  UserCircle,
 } from 'lucide-react';
 
 import {
@@ -132,14 +134,7 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
           <Separator className="my-2" />
           <div className="flex items-center gap-3 px-2 py-1">
-            <Avatar className="size-9">
-              <AvatarImage
-                src="https://placehold.co/100x100.png"
-                alt="Admin"
-                data-ai-hint="user avatar"
-              />
-              <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
+            <UserCircle className="size-9" />
             <div className="flex flex-col">
               <span className="font-semibold text-sm text-sidebar-foreground">
                 {user?.displayName || 'Admin User'}
