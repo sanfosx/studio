@@ -138,6 +138,7 @@ export default function OrderPage() {
       cbu: 'CBU',
       alias: 'Alias',
       attach_proof: 'Attach proof of payment',
+      menu: "Menu"
     },
     es: {
       orderOnline: 'Pedir Online',
@@ -174,6 +175,7 @@ export default function OrderPage() {
       cbu: 'CBU',
       alias: 'Alias',
       attach_proof: 'Adjuntar comprobante',
+      menu: "Menú"
     }
   };
 
@@ -353,7 +355,7 @@ export default function OrderPage() {
 
       <div className="container mx-auto flex-1 px-4 md:px-6 py-8">
         <main>
-            <h1 className="text-4xl font-extrabold font-headline mb-8">{T.orderOnline}</h1>
+            <h1 className="text-4xl font-extrabold font-headline mb-8">{T.menu}</h1>
               <div className="text-center">
                 <Tabs defaultValue="pizzas" className="w-full">
                   <TabsList className="bg-transparent border-2 border-primary/20 p-1 rounded-full mb-8">

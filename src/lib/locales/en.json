@@ -55,7 +55,8 @@
   "transfer": "Bank Transfer",
   "cbu": "CBU",
   "alias": "Alias",
-  "attach_proof": "Attach proof of payment"
+  "attach_proof": "Attach proof of payment",
+  "menu": "Menu"
 }
 
     
