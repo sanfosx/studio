@@ -225,16 +225,18 @@ export default function OrderPage() {
                     <span className="sr-only">Home</span>
                 </Link>
             </Button>
-            <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Shopping Cart">
-                    <ShoppingCart />
-                    {totalItems > 0 && (
-                        <Badge variant="destructive" className="absolute -right-2 -top-2 h-6 w-6 rounded-full flex items-center justify-center">
-                            {totalItems}
-                        </Badge>
-                    )}
-                </Button>
-            </SheetTrigger>
+            <div className="relative">
+              <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon" aria-label="Shopping Cart">
+                      <ShoppingCart />
+                  </Button>
+              </SheetTrigger>
+               {totalItems > 0 && (
+                  <Badge variant="destructive" className="absolute -right-2 -top-2 h-6 w-6 rounded-full flex items-center justify-center pointer-events-none">
+                      {totalItems}
+                  </Badge>
+              )}
+            </div>
             {user ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -407,5 +409,3 @@ export default function OrderPage() {
     </div>
   );
 }
-
-    
