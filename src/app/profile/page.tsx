@@ -19,6 +19,7 @@ import { Logo } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { LanguageSwitcher, ThemeToggle } from '@/components/header';
 import Link from 'next/link';
+import { Home } from 'lucide-react';
 
 const profileSchema = z.object({
   name: z.string().min(1, 'El nombre es requerido'),
@@ -110,6 +111,12 @@ function ProfilePageContent() {
                 <span className="text-xl font-bold font-headline text-primary">Pizzeria Los Genios</span>
             </Link>
             <div className="flex items-center gap-2">
+                <Button variant="ghost" asChild>
+                    <Link href="/">
+                        <Home className='mr-2'/>
+                        Home
+                    </Link>
+                </Button>
                 <LanguageSwitcher />
                 <ThemeToggle />
             </div>
@@ -190,5 +197,3 @@ export default function ProfilePage() {
         </ProtectedRoute>
     )
 }
-
-    
