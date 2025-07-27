@@ -11,7 +11,7 @@ import { LanguageSwitcher, ThemeToggle } from './header';
 import { useAuth } from '@/contexts/auth-provider';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
-import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X, Pencil, Wallet, Landmark, CreditCard, DollarSign } from 'lucide-react';
+import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X, Pencil, Wallet, Landmark, CreditCard, DollarSign, Check } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
@@ -76,6 +76,8 @@ export default function OrderPage() {
   const [clientData, setClientData] = React.useState<ClientData | null>(null);
   const [deliveryAddress, setDeliveryAddress] = React.useState('');
   const [isEditingAddress, setIsEditingAddress] = React.useState(false);
+  const [tempAddress, setTempAddress] = React.useState('');
+
 
   React.useEffect(() => {
     const fetchClientData = async () => {
@@ -134,6 +136,7 @@ export default function OrderPage() {
       card: 'Debit/Credit Card',
       transfer: 'Bank Transfer',
       wallet: 'Virtual Wallet',
+      saveAddress: 'Save Address',
     },
     es: {
       orderOnline: 'Pedir Online',
@@ -168,6 +171,7 @@ export default function OrderPage() {
       card: 'Tarjeta de Débito/Crédito',
       transfer: 'Transferencia Bancaria',
       wallet: 'Billetera Virtual',
+      saveAddress: 'Guardar Dirección',
     }
   };
 
@@ -244,6 +248,20 @@ export default function OrderPage() {
   };
 
   const isOrderReady = (deliveryOption === 'pickup' || (deliveryOption === 'delivery' && deliveryAddress.trim())) && paymentMethod;
+
+  const handleEditAddress = () => {
+    setTempAddress(deliveryAddress);
+    setIsEditingAddress(true);
+  }
+
+  const handleSaveAddress = () => {
+    setDeliveryAddress(tempAddress);
+    setIsEditingAddress(false);
+  }
+
+  const handleCancelEditAddress = () => {
+    setIsEditingAddress(false);
+  }
 
 
   const renderMenuItems = (items: MenuItem[]) => (
@@ -446,19 +464,27 @@ export default function OrderPage() {
                                     {deliveryOption === 'delivery' && (
                                         <div className="w-full pl-8 space-y-2">
                                             {isEditingAddress ? (
-                                                <Input 
-                                                    value={deliveryAddress}
-                                                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                                                    placeholder={T.enterAddress}
-                                                    className="w-full"
-                                                    autoFocus
-                                                />
+                                                <div className="flex items-center gap-2">
+                                                    <Input 
+                                                        value={tempAddress}
+                                                        onChange={(e) => setTempAddress(e.target.value)}
+                                                        placeholder={T.enterAddress}
+                                                        className="w-full"
+                                                        autoFocus
+                                                    />
+                                                     <Button variant="ghost" size="icon" onClick={handleSaveAddress}>
+                                                        <Check className="h-4 w-4 text-green-500" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" onClick={handleCancelEditAddress}>
+                                                        <X className="h-4 w-4 text-red-500" />
+                                                    </Button>
+                                                </div>
                                             ) : (
                                                 <div className='flex items-center w-full'>
                                                     <p className='text-sm text-muted-foreground flex-1'>
                                                         {T.currentAddress} <span className='font-medium text-foreground'>{deliveryAddress}</span>
                                                     </p>
-                                                    <Button variant="link" size="sm" onClick={() => setIsEditingAddress(true)}>
+                                                    <Button variant="link" size="sm" onClick={handleEditAddress}>
                                                         <Pencil className="mr-2 h-3 w-3" />
                                                         {T.changeAddress}
                                                     </Button>
@@ -534,3 +560,5 @@ export default function OrderPage() {
     </div>
   );
 }
+
+    
