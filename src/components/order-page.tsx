@@ -11,39 +11,37 @@ import { LanguageSwitcher, ThemeToggle } from './header';
 import { useAuth } from '@/contexts/auth-provider';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
-import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X, Pencil, Wallet, Landmark, CreditCard, DollarSign, Check } from 'lucide-react';
+import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from './ui/alert-dialog';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from './ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from './ui/sheet';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Input } from './ui/input';
 
 const menuData = {
   pizzas: [
-    { id: 'p1', name: 'Pizza Margherita', description: 'Classic pizza with tomato, mozzarella, and basil.', price: 12.50, image: 'https://placehold.co/300x200.png', hint: 'pizza margherita' },
-    { id: 'p2', name: 'Pizza Pepperoni', description: 'The all-time favorite, covered in pepperoni.', price: 14.00, image: 'https://placehold.co/300x200.png', hint: 'pepperoni pizza' },
-    { id: 'p3', name: 'Genius Special', description: 'A secret recipe that will blow your mind.', price: 18.00, image: 'https://placehold.co/300x200.png', hint: 'specialty pizza' },
-    { id: 'p4', name: 'Veggie Supreme', description: 'Loaded with all the best vegetables.', price: 15.50, image: 'https://placehold.co/300x200.png', hint: 'vegetarian pizza' },
+    { id: 'p1', name: 'Pizza Margherita', description: 'Classic pizza with tomato, mozzarella, and basil.', price: 12.50, image: 'https://placehold.co/600x400.png', hint: 'pizza margherita' },
+    { id: 'p2', name: 'Pizza Pepperoni', description: 'The all-time favorite, covered in pepperoni.', price: 14.00, image: 'https://placehold.co/600x400.png', hint: 'pepperoni pizza' },
+    { id: 'p3', name: 'Genius Special', description: 'A secret recipe that will blow your mind.', price: 18.00, image: 'https://placehold.co/600x400.png', hint: 'specialty pizza' },
+    { id: 'p4', name: 'Veggie Supreme', description: 'Loaded with all the best vegetables.', price: 15.50, image: 'https://placehold.co/600x400.png', hint: 'vegetarian pizza' },
   ],
   snacks: [
-    { id: 's1', name: 'Garlic Bread', description: 'Toasted bread with garlic butter and herbs.', price: 6.00, image: 'https://placehold.co/300x200.png', hint: 'garlic bread' },
-    { id: 's2', name: 'Mozzarella Sticks', description: 'Fried cheese sticks served with marinara sauce.', price: 8.00, image: 'https://placehold.co/300x200.png', hint: 'mozzarella sticks' },
-    { id: 's3', name: 'Chicken Wings', description: 'Spicy and tangy, perfect for sharing.', price: 10.00, image: 'https://placehold.co/300x200.png', hint: 'chicken wings' },
+    { id: 's1', name: 'Garlic Bread', description: 'Toasted bread with garlic butter and herbs.', price: 6.00, image: 'https://placehold.co/600x400.png', hint: 'garlic bread' },
+    { id: 's2', name: 'Mozzarella Sticks', description: 'Fried cheese sticks served with marinara sauce.', price: 8.00, image: 'https://placehold.co/600x400.png', hint: 'mozzarella sticks' },
+    { id: 's3', name: 'Chicken Wings', description: 'Spicy and tangy, perfect for sharing.', price: 10.00, image: 'https://placehold.co/600x400.png', hint: 'chicken wings' },
   ],
   drinks: [
-    { id: 'd1', name: 'Coca-Cola', description: 'Classic soft drink.', price: 2.50, image: 'https://placehold.co/300x200.png', hint: 'soda can' },
-    { id: 'd2', name: 'Fresh Lemonade', description: 'Homemade with fresh lemons.', price: 3.50, image: 'https://placehold.co/300x200.png', hint: 'lemonade glass' },
+    { id: 'd1', name: 'Coca-Cola', description: 'Classic soft drink.', price: 2.50, image: 'https://placehold.co/600x400.png', hint: 'soda can' },
+    { id: 'd2', name: 'Fresh Lemonade', description: 'Homemade with fresh lemons.', price: 3.50, image: 'https://placehold.co/600x400.png', hint: 'lemonade glass' },
   ],
   desserts: [
-    { id: 'ds1', name: 'Tiramisu', description: 'A coffee-flavored Italian dessert.', price: 7.50, image: 'https://placehold.co/300x200.png', hint: 'tiramisu slice' },
-    { id: 'ds2', name: 'Chocolate Lava Cake', description: 'Warm chocolate cake with a molten center.', price: 8.50, image: 'https://placehold.co/300x200.png', hint: 'lava cake' },
+    { id: 'ds1', name: 'Tiramisu', description: 'A coffee-flavored Italian dessert.', price: 7.50, image: 'https://placehold.co/600x400.png', hint: 'tiramisu slice' },
+    { id: 'ds2', name: 'Chocolate Lava Cake', description: 'Warm chocolate cake with a molten center.', price: 8.50, image: 'https://placehold.co/600x400.png', hint: 'lava cake' },
   ]
 };
 
@@ -60,47 +58,12 @@ type CartItem = MenuItem & {
   quantity: number;
 };
 
-type ClientData = {
-    address: string;
-};
-
 export default function OrderPage() {
   const { language, t } = useLanguage();
   const { user, signOut } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
   const [cart, setCart] = React.useState<CartItem[]>([]);
-  const [deliveryOption, setDeliveryOption] = React.useState('pickup');
-  const [paymentMethod, setPaymentMethod] = React.useState<string | null>(null);
   const [isCartOpen, setIsCartOpen] = React.useState(false);
-  const [clientData, setClientData] = React.useState<ClientData | null>(null);
-  const [deliveryAddress, setDeliveryAddress] = React.useState('');
-  const [isEditingAddress, setIsEditingAddress] = React.useState(false);
-  const [tempAddress, setTempAddress] = React.useState('');
-
-
-  React.useEffect(() => {
-    const fetchClientData = async () => {
-        if(user) {
-            const q = query(collection(db, "clients"), where("uid", "==", user.uid));
-            const querySnapshot = await getDocs(q);
-            if (!querySnapshot.empty) {
-                const clientDoc = querySnapshot.docs[0].data() as ClientData;
-                setClientData(clientDoc);
-                setDeliveryAddress(clientDoc.address || '');
-                if (!clientDoc.address) {
-                    setIsEditingAddress(true);
-                }
-            } else {
-                setIsEditingAddress(true);
-            }
-        } else {
-            setIsEditingAddress(true);
-        }
-    };
-    fetchClientData();
-  }, [user]);
-
 
   const translations = {
     en: {
@@ -116,29 +79,12 @@ export default function OrderPage() {
       tax: 'Tax (5%)',
       total: 'Total',
       placeOrder: 'Place Order',
-      orderPlaced: 'Order Placed!',
-      orderPlacedDesc: 'Your order has been successfully placed.',
       myProfile: 'My Profile',
       logout: 'Logout',
-      deliveryMethod: 'Delivery Method',
-      deliveryMethodDesc: 'How would you like to receive your order?',
-      pickup: 'Store Pickup',
-      delivery: 'Home Delivery',
-      deliveryAddressPrompt: 'Your order will be sent to:',
-      noAddressRegistered: 'No address registered. Please add one in your profile.',
-      confirmOrder: 'Confirm Order',
-      currentAddress: 'Current address:',
-      changeAddress: 'Change',
-      enterAddress: 'Enter your delivery address',
-      paymentMethod: 'Payment Method',
-      paymentMethodDesc: 'Please select a payment method.',
-      cash: 'Cash',
-      transfer: 'Bank Transfer',
-      saveAddress: 'Save Address',
-      cbu: 'CBU',
-      alias: 'Alias',
-      attach_proof: 'Attach proof of payment',
-      menu: "Menu"
+      menu: "Menu",
+      clearCart: 'Clear Cart',
+      clearCartConfirmationTitle: 'Are you sure?',
+      clearCartConfirmationDescription: 'This action will remove all items from your cart.',
     },
     es: {
       orderOnline: 'Pedir Online',
@@ -153,53 +99,17 @@ export default function OrderPage() {
       impuestos: 'Impuestos (5%)',
       total: 'Total',
       placeOrder: 'Realizar Pedido',
-      orderPlaced: '¡Pedido Realizado!',
-      orderPlacedDesc: 'Tu pedido ha sido realizado con éxito.',
       myProfile: 'Mi Perfil',
       logout: 'Cerrar Sesión',
-      deliveryMethod: 'Método de Entrega',
-      deliveryMethodDesc: '¿Cómo te gustaría recibir tu pedido?',
-      pickup: 'Retiro en local',
-      delivery: 'Envío a domicilio',
-      deliveryAddressPrompt: 'Tu pedido se enviará a:',
-      noAddressRegistered: 'No hay dirección registrada. Por favor, añade una en tu perfil.',
-      confirmOrder: 'Confirmar Pedido',
-      currentAddress: 'Dirección actual:',
-      changeAddress: 'Cambiar',
-      enterAddress: 'Ingresa tu dirección de envío',
-      paymentMethod: 'Método de Pago',
-      paymentMethodDesc: 'Por favor, selecciona un método de pago.',
-      cash: 'Efectivo',
-      transfer: 'Transferencia Bancaria',
-      saveAddress: 'Guardar Dirección',
-      cbu: 'CBU',
-      alias: 'Alias',
-      attach_proof: 'Adjuntar comprobante',
-      menu: "Menú"
+      menu: "Menú",
+      clearCart: 'Vaciar Carrito',
+      clearCartConfirmationTitle: '¿Estás seguro?',
+      clearCartConfirmationDescription: 'Esta acción eliminará todos los productos de tu carrito.',
     }
   };
 
   const T = language === 'en' ? translations.en : translations.es;
   
-  const handleOpenPlaceOrder = () => {
-    if (!user) {
-        toast({
-            variant: 'destructive',
-            title: 'Inicio de sesión requerido',
-            description: 'Por favor, inicia sesión para realizar un pedido.',
-        });
-        router.push('/login');
-        return false;
-    }
-    if (clientData?.address) {
-        setDeliveryAddress(clientData.address);
-        setIsEditingAddress(false);
-    } else {
-        setDeliveryAddress('');
-        setIsEditingAddress(true);
-    }
-    return true;
-  };
 
   const handleAddToCart = (item: MenuItem) => {
     setCart(prevCart => {
@@ -228,61 +138,39 @@ export default function OrderPage() {
     }
   };
 
+  const handleClearCart = () => {
+    setCart([]);
+  }
+
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const tax = subtotal * 0.05;
   const total = subtotal + tax;
   const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
-
-  const handleConfirmOrder = () => {
-    let orderDescription = `${deliveryOption === 'pickup' ? T.pickup : `${T.delivery} a ${deliveryAddress}`}`;
-    orderDescription += `, ${t('paymentMethod')}: ${paymentMethod}`;
-    toast({
-        title: T.orderPlaced,
-        description: `${T.orderPlacedDesc}`,
-    });
-    setCart([]);
-    setPaymentMethod(null);
-    setDeliveryOption('pickup');
-    setIsCartOpen(false);
-  }
 
   const handleLogout = async () => {
     await signOut();
     router.push('/');
   };
 
-  const isOrderReady = (deliveryOption === 'pickup' || (deliveryOption === 'delivery' && deliveryAddress.trim())) && paymentMethod;
-
-  const handleEditAddress = () => {
-    setTempAddress(deliveryAddress);
-    setIsEditingAddress(true);
-  }
-
-  const handleSaveAddress = () => {
-    setDeliveryAddress(tempAddress);
-    setIsEditingAddress(false);
-  }
-
-  const handleCancelEditAddress = () => {
-    setIsEditingAddress(false);
-  }
-
-
   const renderMenuItems = (items: MenuItem[]) => (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      {items.map(item => (
-        <Card key={item.id} className="flex flex-col">
-          <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={300} height={200} className="w-full h-32 object-cover rounded-t-lg" />
-          <CardHeader className="p-4">
-            <CardTitle className="text-lg">{item.name}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1 p-4 pt-0">
-            <p className="text-muted-foreground text-sm h-12">{item.description}</p>
-          </CardContent>
-          <CardFooter className="flex justify-between items-center p-4">
-            <p className="font-bold text-lg text-primary">${item.price.toFixed(2)}</p>
-            <Button onClick={() => handleAddToCart(item)}>{T.addToCart}</Button>
-          </CardFooter>
+      {items.map((item, index) => (
+        <Card key={item.id} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105 h-96 flex flex-col">
+            <div className='h-1/2 w-full'>
+                <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-full object-cover" />
+            </div>
+            <div className='flex flex-col flex-1'>
+                <CardHeader className="p-4">
+                    <CardTitle className="text-lg">{item.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0 flex-1">
+                    <p className="text-muted-foreground text-sm">{item.description}</p>
+                    <p className="font-bold text-primary mt-2">${item.price.toFixed(2)}</p>
+                </CardContent>
+                <CardFooter className="p-4 pt-0 flex justify-center">
+                    <Button onClick={() => handleAddToCart(item)}>{T.addToCart}</Button>
+                </CardFooter>
+            </div>
         </Card>
       ))}
     </div>
@@ -383,10 +271,35 @@ export default function OrderPage() {
 
        <SheetContent className="flex flex-col">
             <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                     <ShoppingCart />
-                    {T.yourOrder}
-                </SheetTitle>
+                <div className="flex justify-between items-center">
+                    <SheetTitle className="flex items-center gap-2">
+                        <ShoppingCart />
+                        {T.yourOrder}
+                    </SheetTitle>
+                    {cart.length > 0 && (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" title={T.clearCart}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>{T.clearCartConfirmationTitle}</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        {T.clearCartConfirmationDescription}
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleClearCart} className="bg-destructive hover:bg-destructive/90">
+                                        {t('delete')}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
+                </div>
             </SheetHeader>
              <div className="flex-1 overflow-y-auto pr-4">
                 {cart.length === 0 ? (
@@ -437,130 +350,9 @@ export default function OrderPage() {
                         <span>{T.total}</span>
                         <span>${total.toFixed(2)}</span>
                         </div>
-                        <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button size="lg" className="w-full mt-4" onClick={(e) => {
-                                if (!handleOpenPlaceOrder()) {
-                                    e.preventDefault();
-                                }
-                            }}>{T.placeOrder}</Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className="grid grid-rows-[auto_1fr_auto] max-h-[90vh]">
-                            <AlertDialogHeader>
-                            <AlertDialogTitle>{T.confirmOrder}</AlertDialogTitle>
-                            </AlertDialogHeader>
-                           
-                           <div className="space-y-6 overflow-y-auto pr-2">
-                            <div>
-                                <Label className='font-semibold'>{T.deliveryMethod}</Label>
-                                <RadioGroup defaultValue={deliveryOption} onValueChange={setDeliveryOption} className='mt-2 space-y-2'>
-                                <Label htmlFor="pickup" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                    <Store className='text-primary' />
-                                    <p className='flex-1 font-medium'>{T.pickup}</p>
-                                    <RadioGroupItem value="pickup" id="pickup" />
-                                </Label>
-                                <Label htmlFor="delivery" className="flex flex-col items-start gap-3 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                    <div className='flex items-center w-full'>
-                                        <Bike className='text-primary mr-4'/>
-                                        <p className='flex-1 font-medium'>{T.delivery}</p>
-                                        <RadioGroupItem value="delivery" id="delivery" />
-                                    </div>
-                                    {deliveryOption === 'delivery' && (
-                                        <div className="w-full pl-8 space-y-2">
-                                            {isEditingAddress ? (
-                                                <div className="flex items-center gap-2">
-                                                    <Input 
-                                                        value={tempAddress}
-                                                        onChange={(e) => setTempAddress(e.target.value)}
-                                                        placeholder={T.enterAddress}
-                                                        className="w-full"
-                                                        autoFocus
-                                                    />
-                                                     <Button variant="ghost" size="icon" onClick={handleSaveAddress}>
-                                                        <Check className="h-4 w-4 text-green-500" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" onClick={handleCancelEditAddress}>
-                                                        <X className="h-4 w-4 text-red-500" />
-                                                    </Button>
-                                                </div>
-                                            ) : (
-                                                <div className='flex items-center w-full'>
-                                                    <p className='text-sm text-muted-foreground flex-1'>
-                                                        {T.currentAddress} <span className='font-medium text-foreground'>{deliveryAddress}</span>
-                                                    </p>
-                                                    <Button variant="link" size="sm" onClick={handleEditAddress}>
-                                                        <Pencil className="mr-2 h-3 w-3" />
-                                                        {T.changeAddress}
-                                                    </Button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </Label>
-                                </RadioGroup>
-                            </div>
-                            
-                            <div>
-                                <Label className='font-semibold'>{t('paymentMethod')}</Label>
-                                <RadioGroup onValueChange={setPaymentMethod} value={paymentMethod || ''} className='mt-2 space-y-2'>
-                                    <Label htmlFor="cash" className="flex items-center gap-4 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                        <DollarSign className='text-primary' />
-                                        <p className='flex-1 font-medium'>{t('cash')}</p>
-                                        <RadioGroupItem value="cash" id="cash" />
-                                    </Label>
-                                    <Label htmlFor="transfer" className="flex flex-col items-start gap-3 p-3 border rounded-md cursor-pointer hover:bg-accent has-[:checked]:bg-accent has-[:checked]:border-primary">
-                                        <div className='flex items-center w-full'>
-                                            <Landmark className='text-primary mr-4' />
-                                            <p className='flex-1 font-medium'>{t('transfer')}</p>
-                                            <RadioGroupItem value="transfer" id="transfer" />
-                                        </div>
-                                        {paymentMethod === 'transfer' && (
-                                            <div className="w-full pl-8 space-y-4 pt-2">
-                                                <Separator />
-                                                <div>
-                                                    <p className="text-sm font-medium">{t('cbu')}: <span className="font-mono text-muted-foreground">0000003100055555555555</span></p>
-                                                    <p className="text-sm font-medium">{t('alias')}: <span className="font-mono text-muted-foreground">pizzeria.los.genios</span></p>
-                                                </div>
-                                                <div className="grid w-full max-w-sm items-center gap-1.5">
-                                                    <Label htmlFor="proof-of-payment">{t('attach_proof')}</Label>
-                                                    <Input id="proof-of-payment" type="file" />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </Label>
-                                </RadioGroup>
-                            </div>
-
-                            <div>
-                                <Separator className="my-2" />
-                                <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                    <span>{T.subtotal}</span>
-                                    <span>${subtotal.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm text-muted-foreground">
-                                    <span>{language === 'es' ? T.impuestos : T.tax}</span>
-                                    <span>${tax.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between font-bold text-lg">
-                                    <span>{T.total}</span>
-                                    <span>${total.toFixed(2)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                           </div>
-
-                            <AlertDialogFooter className="pt-4 border-t">
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction 
-                                onClick={handleConfirmOrder}
-                                disabled={!isOrderReady}
-                            >
-                                {T.confirmOrder}
-                            </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                        </AlertDialog>
+                        <Button size="lg" className="w-full mt-4" asChild>
+                            <Link href="/cart">{T.placeOrder}</Link>
+                        </Button>
                     </div>
                 </SheetFooter>
             )}

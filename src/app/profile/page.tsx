@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/language-provider';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { Logo } from '@/components/icons';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { LanguageSwitcher, ThemeToggle } from '@/components/header';
 import Link from 'next/link';
 import { Home, Pencil, X, Check, ShoppingCart, CalendarDays, Receipt } from 'lucide-react';
@@ -57,6 +57,8 @@ function ProfilePageContent() {
   const [fieldValue, setFieldValue] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'orders';
 
 
   React.useEffect(() => {
@@ -211,12 +213,12 @@ function ProfilePageContent() {
             </div>
       </header>
         <div className="flex flex-1 items-start justify-center py-12 px-4">
-            <Tabs defaultValue="profile" className="w-full max-w-4xl">
+            <Tabs defaultValue={activeTab} value={activeTab} onValueChange={(value) => router.push(`/profile?tab=${value}`)} className="w-full max-w-4xl">
                  <div className="flex justify-center">
                     <TabsList className="bg-transparent border-2 border-primary/20 p-1 rounded-full mb-8">
-                        <TabsTrigger value="profile" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{t('myProfile')}</TabsTrigger>
                         <TabsTrigger value="orders" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Mis Pedidos</TabsTrigger>
                         <TabsTrigger value="reservations" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Mis Reservas</TabsTrigger>
+                        <TabsTrigger value="profile" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{t('myProfile')}</TabsTrigger>
                     </TabsList>
                 </div>
                 <TabsContent value="profile">

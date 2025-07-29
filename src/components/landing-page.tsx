@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/language-provider';
 import { Logo } from '@/components/icons';
 import { MapPin, Phone, Mail, User, LogOut, UserCircle, ShoppingCart } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
 import { LanguageSwitcher, ThemeToggle } from './header';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from '@/contexts/auth-provider';
@@ -104,15 +104,21 @@ export default function LandingPage() {
   const renderMenuItems = (items: typeof menu.pizzas) => (
     <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {items.map((item, index) => (
-        <Card key={item.name} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105" style={{ animationDelay: `${index * 100}ms` }}>
-           <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-40 object-cover" />
-          <CardHeader className="p-4">
-            <CardTitle className="text-lg">{item.name}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-muted-foreground text-sm h-12">{item.description}</p>
-            <p className="font-bold text-primary mt-2">{item.price}</p>
-          </CardContent>
+        <Card key={item.name} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105 h-96 flex flex-col" style={{ animationDelay: `${index * 100}ms` }}>
+            <div className='h-1/2 w-full'>
+                <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-full object-cover" />
+            </div>
+            <div className='flex flex-col flex-1 p-4'>
+                <CardHeader className="p-0">
+                    <CardTitle className="text-lg">{item.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0 pt-2 flex-1">
+                    <p className="text-muted-foreground text-sm">{item.description}</p>
+                </CardContent>
+                <CardFooter className="p-0 pt-2">
+                    <p className="font-bold text-primary">{item.price}</p>
+                </CardFooter>
+            </div>
         </Card>
       ))}
     </div>
@@ -293,5 +299,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
