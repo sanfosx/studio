@@ -167,8 +167,8 @@ export default function OrderPage() {
                     <p className="text-muted-foreground text-sm">{item.description}</p>
                     <p className="font-bold text-primary mt-2">${item.price.toFixed(2)}</p>
                 </CardContent>
-                <CardFooter className="p-4 pt-0">
-                    <Button onClick={() => handleAddToCart(item)} className="w-full">{T.addToCart}</Button>
+                <CardFooter className="p-4 pt-0 flex justify-center">
+                    <Button onClick={() => handleAddToCart(item)}>{T.addToCart}</Button>
                 </CardFooter>
             </div>
         </Card>
