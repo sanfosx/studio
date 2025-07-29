@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -188,7 +189,7 @@ function CartPageContent() {
             description: T.orderPlacedDesc,
         });
         setCart([]);
-        router.push('/profile');
+        router.push('/profile?tab=orders');
     }
 
     const isOrderReady = (deliveryOption === 'pickup' || (deliveryOption === 'delivery' && deliveryAddress.trim())) && paymentMethod;
