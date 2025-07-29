@@ -155,18 +155,22 @@ export default function OrderPage() {
   const renderMenuItems = (items: MenuItem[]) => (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {items.map((item, index) => (
-        <Card key={item.id} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105">
-           <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-40 object-cover" />
-          <CardHeader className="p-4">
-            <CardTitle className="text-lg">{item.name}</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4 pt-0">
-            <p className="text-muted-foreground text-sm h-12">{item.description}</p>
-            <p className="font-bold text-primary mt-2">${item.price.toFixed(2)}</p>
-          </CardContent>
-           <CardFooter className="p-4 pt-0">
-            <Button onClick={() => handleAddToCart(item)} className="w-full">{T.addToCart}</Button>
-          </CardFooter>
+        <Card key={item.id} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105 h-96 flex flex-col">
+            <div className='h-1/2 w-full'>
+                <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={600} height={400} className="w-full h-full object-cover" />
+            </div>
+            <div className='flex flex-col flex-1'>
+                <CardHeader className="p-4">
+                    <CardTitle className="text-lg">{item.name}</CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0 flex-1">
+                    <p className="text-muted-foreground text-sm">{item.description}</p>
+                    <p className="font-bold text-primary mt-2">${item.price.toFixed(2)}</p>
+                </CardContent>
+                <CardFooter className="p-4 pt-0">
+                    <Button onClick={() => handleAddToCart(item)} className="w-full">{T.addToCart}</Button>
+                </CardFooter>
+            </div>
         </Card>
       ))}
     </div>
