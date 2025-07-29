@@ -138,7 +138,10 @@ export default function OrderPage() {
       cbu: 'CBU',
       alias: 'Alias',
       attach_proof: 'Attach proof of payment',
-      menu: "Menu"
+      menu: "Menu",
+      clearCart: 'Clear Cart',
+      clearCartConfirmationTitle: 'Are you sure?',
+      clearCartConfirmationDescription: 'This action will remove all items from your cart.',
     },
     es: {
       orderOnline: 'Pedir Online',
@@ -175,7 +178,10 @@ export default function OrderPage() {
       cbu: 'CBU',
       alias: 'Alias',
       attach_proof: 'Adjuntar comprobante',
-      menu: "Menú"
+      menu: "Menú",
+      clearCart: 'Vaciar Carrito',
+      clearCartConfirmationTitle: '¿Estás seguro?',
+      clearCartConfirmationDescription: 'Esta acción eliminará todos los productos de tu carrito.',
     }
   };
 
@@ -227,6 +233,10 @@ export default function OrderPage() {
         );
     }
   };
+
+  const handleClearCart = () => {
+    setCart([]);
+  }
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const tax = subtotal * 0.05;
@@ -383,10 +393,35 @@ export default function OrderPage() {
 
        <SheetContent className="flex flex-col">
             <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                     <ShoppingCart />
-                    {T.yourOrder}
-                </SheetTitle>
+                <div className="flex justify-between items-center">
+                    <SheetTitle className="flex items-center gap-2">
+                        <ShoppingCart />
+                        {T.yourOrder}
+                    </SheetTitle>
+                    {cart.length > 0 && (
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" title={T.clearCart}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>{T.clearCartConfirmationTitle}</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        {T.clearCartConfirmationDescription}
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleClearCart} className="bg-destructive hover:bg-destructive/90">
+                                        {t('delete')}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    )}
+                </div>
             </SheetHeader>
              <div className="flex-1 overflow-y-auto pr-4">
                 {cart.length === 0 ? (
