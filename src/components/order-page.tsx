@@ -271,7 +271,7 @@ export default function OrderPage() {
   const renderMenuItems = (items: MenuItem[]) => (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {items.map((item, index) => (
-        <Card key={item.id} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105">
+        <Card key={item.id} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105 flex flex-col">
            <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={300} height={200} className="w-full h-32 object-cover" />
           <CardHeader className="p-4">
             <CardTitle className="text-lg">{item.name}</CardTitle>
@@ -280,8 +280,8 @@ export default function OrderPage() {
             <p className="text-muted-foreground text-sm h-12">{item.description}</p>
             <p className="font-bold text-primary mt-2">${item.price.toFixed(2)}</p>
           </CardContent>
-           <CardFooter className="p-2">
-            <Button onClick={() => handleAddToCart(item)} className="w-full">{T.addToCart}</Button>
+           <CardFooter className="p-2 justify-center">
+            <Button onClick={() => handleAddToCart(item)} className="w-auto">{T.addToCart}</Button>
           </CardFooter>
         </Card>
       ))}
@@ -569,5 +569,3 @@ export default function OrderPage() {
     </div>
   );
 }
-
-    
