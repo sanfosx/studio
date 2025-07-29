@@ -11,7 +11,7 @@ import { LanguageSwitcher, ThemeToggle } from './header';
 import { useAuth } from '@/contexts/auth-provider';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from './ui/card';
-import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X, Pencil, Wallet, Landmark, CreditCard, DollarSign, Check } from 'lucide-react';
+import { Home, Minus, Plus, ShoppingCart, Trash2, User, LogOut, UserCircle, Bike, Store, X, Pencil, Landmark, DollarSign, Check } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
@@ -270,18 +270,18 @@ export default function OrderPage() {
 
   const renderMenuItems = (items: MenuItem[]) => (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-      {items.map(item => (
-        <Card key={item.id} className="flex flex-col">
-          <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={300} height={200} className="w-full h-32 object-cover rounded-t-lg" />
+      {items.map((item, index) => (
+        <Card key={item.id} className="text-left overflow-hidden bg-card/60 backdrop-blur-sm border-primary/20 shadow-lg hover:shadow-primary/20 transition-all duration-300 hover:scale-105">
+           <Image src={item.image} alt={item.name} data-ai-hint={item.hint} width={300} height={200} className="w-full h-32 object-cover" />
           <CardHeader className="p-4">
             <CardTitle className="text-lg">{item.name}</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 p-4 pt-0">
+          <CardContent className="p-4 pt-0 flex-1">
             <p className="text-muted-foreground text-sm h-12">{item.description}</p>
+            <p className="font-bold text-primary mt-2">${item.price.toFixed(2)}</p>
           </CardContent>
-          <CardFooter className="flex justify-between items-center p-4">
-            <p className="font-bold text-lg text-primary">${item.price.toFixed(2)}</p>
-            <Button onClick={() => handleAddToCart(item)}>{T.addToCart}</Button>
+           <CardFooter className="p-2">
+            <Button onClick={() => handleAddToCart(item)} className="w-full">{T.addToCart}</Button>
           </CardFooter>
         </Card>
       ))}
@@ -569,3 +569,5 @@ export default function OrderPage() {
     </div>
   );
 }
+
+    
